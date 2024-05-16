@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
+    Route::post('/store', 'StoreController')->name('user.store');
+});
