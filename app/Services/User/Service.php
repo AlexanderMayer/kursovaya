@@ -5,6 +5,7 @@ use App\Models\User;
 
 class Service{
     public function store($data){
-        User::create($data);
+        $user = User::create($data);
+        return $user;
     }
 }

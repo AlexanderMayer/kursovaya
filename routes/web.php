@@ -18,8 +18,8 @@ Route::get('/', function () {
 });
 
 Route::get('/imgtest','App\Http\Controllers\ImgTestController@create');
-Route::post('/imgtest/store','App\Http\Controllers\ImgTestController@store')->name('imgtest.store');
+Route::get('/test/store','App\Http\Controllers\TestController@store')->name('imgtest.store');
 
-Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
-    Route::post('/store', 'StoreController')->name('user.store');
-});
+//Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
+//    Route::post('/store', 'AddAvatarController')->name('user.store');
+//});

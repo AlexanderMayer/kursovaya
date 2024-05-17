@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('activity')->default('active');
             $table->string('name');
-            $table->string('surname');
+            $table->string('surname')->nullable();
             $table->string('email')->unique();
             $table->string('login')->unique();
             $table->string('password');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('sales_count')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->dateTime('visited_at')->nullable();
-            $table->unsignedBigInteger('ava')->nullable();
+            $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -27,9 +27,12 @@ Route::group([
     Route::post('logout', 'App\Http\Controllers\AuthController@logout');
     Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
     Route::post('me', 'App\Http\Controllers\AuthController@me');
-
 });
 
-Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
+//Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
+//    Route::post('/update', 'UpdateController');
+//});
+
+Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
     Route::post('/store', 'StoreController');
 });
