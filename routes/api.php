@@ -29,9 +29,10 @@ Route::group([
     Route::post('me', 'App\Http\Controllers\AuthController@me');
 });
 
-//Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
+Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
+    Route::get('/edit', 'EditController');
 //    Route::post('/update', 'UpdateController');
-//});
+});
 
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
     Route::post('/store', 'StoreController');
