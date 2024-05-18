@@ -14,7 +14,7 @@ class TestController extends Controller
     public function store(Request $request){
 //        $path = $request->file('image')->store('uploads', 'public');
 //        auth()->user()->avatar()->path = $path;
-        $blank = User::where('id',15)->first()->avatar;
+        $blank = User::where('id',6)->first()->avatar;
         return view('imgtest', compact('blank'));
     }
 }

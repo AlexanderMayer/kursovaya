@@ -4,8 +4,13 @@ namespace App\Services\User;
 use App\Models\User;
 
 class Service{
-    public function store($data){
+    public function store($data, $path= null){
         $user = User::create($data);
-        return $user;
+
+        if($path){
+            $relativePath = 'uploads/' . basename($path);
+            $user->avatar = $relativePath;
+            $user->save();
+        }
     }
 }
