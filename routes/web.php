@@ -17,7 +17,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/imgtest','App\Http\Controllers\ImgTestController@create');
+Route::get('/test','App\Http\Controllers\TestController@index');
 Route::get('/test/store','App\Http\Controllers\TestController@store')->name('imgtest.store');
 
 //Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){

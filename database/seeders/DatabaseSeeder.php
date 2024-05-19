@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Category;
 use App\Models\Lot;
+use App\Models\Message;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\User;
@@ -20,8 +21,9 @@ class DatabaseSeeder extends Seeder
         User::factory(4)->create();
         Role::factory(4)->create();
         Category::factory(4)->create();
-        Lot::factory(4)->create();
+        Lot::factory(10)->create();
         Photo::factory(4)->create();
+        Message::factory(10)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

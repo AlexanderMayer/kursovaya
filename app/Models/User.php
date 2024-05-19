@@ -25,6 +25,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Lot::class);
     }
 
+    public function sentMsg(){
+        return $this->hasMany(Message::class, 'sender');
+    }
+
+    public function recMsg(){
+        return $this->hasMany(Message::class, 'recipient');
+    }
+
 
     protected $hidden = [
         'password',

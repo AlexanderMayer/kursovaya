@@ -31,7 +31,7 @@ Route::group([
 
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
     Route::get('/edit', 'EditController');
-//    Route::post('/update', 'UpdateController');
+    Route::patch('/{user}', 'UpdateController');
 });
 
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){

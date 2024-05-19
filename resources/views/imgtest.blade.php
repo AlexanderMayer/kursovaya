@@ -2,6 +2,7 @@
 
 @section('content')
     <p>Тестируем</p>
+    <br>
 {{--    <br>--}}
 {{--    <form action="{{route('imgtest.store')}}" method="post" enctype="multipart/form-data">--}}
 {{--        @csrf--}}
@@ -9,8 +10,18 @@
 {{--        <input type="submit" value="Отправить">--}}
 {{--    </form>--}}
 
+
+    <p>{{$blank}}</p>
+    @foreach($blank as $el)
+        <p>{{$el}}</p>
+    @endforeach
+
+
+
+
+
     @isset($blank)
-        <img alt="img" src="{{asset('/storage/' . $blank)}}">
-        <p>{{$blank}}</p>
+{{--        <img alt="img" src="{{asset('/storage/' . $blank)}}">--}}
+
     @endisset
 @endsection
