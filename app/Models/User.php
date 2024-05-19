@@ -21,6 +21,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Role::class);
     }
 
+    public function lots(){
+        return $this->hasMany(Lot::class);
+    }
 
 
     protected $hidden = [
