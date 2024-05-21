@@ -6,9 +6,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class Service{
-    public function store($data){
+    public function store($data, $photos){
         $lot = Lot::create([
-            'seller'=>auth()->user()->id,
+            'seller'=>auth()->id(),
             'title'=>$data['title'],
             'description'=>$data['description'],
             'status'=>'active',
@@ -16,6 +16,17 @@ class Service{
             'bet_step'=>$data['bet_step'],
             'category_id'=>$data['category_id'],
         ]);
+
+        if($photos){
+            foreach($photos as $photo){
+                $path= $photo->store('uploads', 'public');
+                $lot->photos()->create([
+                    'adress'=>$path,
+                ]);
+            }
+        }
+
+
         return $lot;
 
     }

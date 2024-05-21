@@ -23,6 +23,7 @@ class StoreRequest extends FormRequest
             'start_cost'=>'integer',
             'bet_step'=>'integer',
             'category_id'=>'integer',
+            'photos'=>'',
         ];
     }
 }
