@@ -11,7 +11,7 @@
 {{--    </form>--}}
 
 
-    <p>{{$blank}}</p>
+{{--    <p>{{$blank}}</p>--}}
     @foreach($blank as $el)
         <p>{{$el}}</p>
     @endforeach

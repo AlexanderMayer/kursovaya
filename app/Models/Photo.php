@@ -13,7 +13,7 @@ class Photo extends Model
     public $timestamps = false;
 
 
-    public function lots(){
-        return $this->belongsTo(Lot::class);
+    public function lot(){
+        return $this->belongsTo(Lot::class, 'lot_id');
     }
 }
