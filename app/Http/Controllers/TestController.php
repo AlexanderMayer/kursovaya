@@ -14,8 +14,8 @@ class TestController extends Controller
     public function index(Request $request){
 //        $path = $request->file('image')->store('uploads', 'public');
 //        auth()->user()->avatar()->path = $path;
-        $blank = User::where('id',3)->first();
-        $blank = $blank->sentMsg;
+        $blank = User::where('id',4)->first();
+        $blank = $blank->bought;
         return view('imgtest', compact('blank'));
     }
 }

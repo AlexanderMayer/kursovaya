@@ -12,8 +12,11 @@ class Lot extends Model
     protected $table = 'lots';
     protected $guarded=[];
 
-    public function user(){
-        return $this->belongsTo(User::class);
+    public function seller(){
+        return $this->belongsTo(User::class, 'seller');
+    }
+    public function buyer(){
+        return $this->belongsTo(User::class, 'buyer');
     }
 
     public function category(){

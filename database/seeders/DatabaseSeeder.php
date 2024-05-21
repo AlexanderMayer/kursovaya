@@ -19,8 +19,25 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory(4)->create();
-        Role::factory(4)->create();
-        Category::factory(4)->create();
+        User::factory()->createMany([
+            ['name'=>"qwe", 'surname'=>"qwe", 'login'=>"qwe", 'email'=>"qwe", 'password'=>"qwe",],
+            ['name'=>"admin", 'surname'=>"admin", 'login'=>"admin", 'email'=>"admin", 'password'=>"123",'role_id'=>2],
+        ]);
+
+        Role::factory()->createMany([
+            ['role_name' => 'user'],
+            ['role_name' => 'admin'],
+            ['role_name' => 'moder'],
+        ]);
+
+        Category::factory()->createMany([
+            ['category_name' => 'Антиквариат'],
+            ['category_name' => 'Игрушки'],
+            ['category_name' => 'Инструменты'],
+            ['category_name' => 'Техника'],
+            ['category_name' => 'Книги'],
+        ]);
+
         Lot::factory(10)->create();
         Photo::factory(4)->create();
         Message::factory(10)->create();

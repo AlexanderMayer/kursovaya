@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('activity')->default('active');
+            $table->unsignedBigInteger('role_id')->default(1);
             $table->string('name');
             $table->string('surname')->nullable();
             $table->string('email')->unique();
@@ -21,7 +22,6 @@ return new class extends Migration
             $table->string('password');
             $table->integer('rate_honesty')->default(100);//рейтинг поведения
             $table->integer('rate_decency')->default(100);//рейтинг поведения
-            $table->unsignedBigInteger('role_id')->default(2);
             $table->integer('buying_count')->default(0);
             $table->integer('sales_count')->default(0);
             $table->timestamp('email_verified_at')->nullable();

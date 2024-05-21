@@ -11,6 +11,7 @@ class StoreController extends BaseController
 {
     public function __invoke(StoreRequest $request){
         $data = $request->validated();
+
         if($request->file('avatar')){
             $path = $request->file('avatar')->store('uploads', 'public');
             $this->service->store($data, $path);

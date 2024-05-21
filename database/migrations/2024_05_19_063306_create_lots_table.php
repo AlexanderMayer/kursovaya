@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('lots', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('seller');
+            $table->unsignedBigInteger('buyer')->nullable();
             $table->string('title');
             $table->string('description');
-            $table->string('status');
-            $table->integer('cost');
-            $table->integer('bet');
+            $table->string('status')->default('active');
+            $table->integer('start_cost');
+            $table->integer('last_bet')->nullable();
             $table->integer('bet_step');
             $table->unsignedBigInteger('category_id');
             $table->timestamps();

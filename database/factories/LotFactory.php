@@ -19,12 +19,13 @@ class LotFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::get()->random()->id,
+            'seller' => User::get()->random()->id,
+            'buyer' => User::get()->random()->id,
             'title' => fake()->word(),
             'description' => fake()->word(),
             'status' => fake()->word(),
-            'cost' => fake()->numberBetween(1000, 10000),
-            'bet' => fake()->numberBetween(1000, 10000),
+            'start_cost' => fake()->numberBetween(1000, 10000),
+            'last_bet' => fake()->numberBetween(1000, 10000),
             'bet_step' => fake()->numberBetween(10, 100),
             'category_id' => Category::get()->random()->id,
         ];

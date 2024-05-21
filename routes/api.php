@@ -30,10 +30,15 @@ Route::group([
 });
 
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
-    Route::get('/edit', 'EditController');
+    Route::get('/{user}', 'EditController');
     Route::patch('/{user}', 'UpdateController');
 });
 
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
     Route::post('/store', 'StoreController');
+});
+
+Route::group(['namespace'=>'App\Http\Controllers\Lot', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
+    Route::get('/', 'IndexController');
+    Route::post('/post', 'StoreController');
 });
