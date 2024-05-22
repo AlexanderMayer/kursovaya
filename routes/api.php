@@ -39,8 +39,14 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], funct
 });
 
 Route::group(['namespace'=>'App\Http\Controllers\Lot', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
-    Route::get('/', 'IndexController');
-    Route::post('/', 'StoreController');
-    Route::get('/{lot}', 'ShowController');
-//    Route::patch('/{lot}', 'UpdateController');
+    Route::get('/', 'IndexController')->name('lot.index');
+    Route::post('/', 'StoreController')->name('lot.store');
+    Route::get('/{lot}', 'ShowController')->name('lot.show');
+    Route::get('/{lot}/edit', 'EditController')->name('lot.edit');
+    Route::patch('/{lot}', 'UpdateController')->name('lot.update');
+    Route::delete('/{lot}', 'DeleteController')->name('lot.delete');
+
+//    Route::post('/{lot}/edit/photo/', 'StorePhotoController');
+//    Route::delete('/{lot}/edit/photo/{photo}', 'DeletePhotoController');
+
 });

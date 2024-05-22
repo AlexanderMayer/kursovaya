@@ -25,9 +25,13 @@ class Service{
                 ]);
             }
         }
-
-
         return $lot;
-
     }
+
+    public function update($lot, $data){
+        $lot = Lot::where('id', $lot->id)->first();
+        $lot->update($data);
+        return $lot;
+    }
+
 }
