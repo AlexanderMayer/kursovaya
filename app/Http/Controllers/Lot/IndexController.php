@@ -14,7 +14,12 @@ class IndexController extends BaseController
 
         $data = $data->map(function ($item) {
             $photos = Photo::where('lot_id', $item->id)->get();
-            $images = $photos->pluck('adress')->toArray();
+            $images = $photos->map(function($photo) {
+                return [
+                    'id' => $photo->id,
+                    'adress' => $photo->adress
+                ];
+            })->toArray();
 
             $item->images = $images;
 

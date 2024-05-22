@@ -41,4 +41,6 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], funct
 Route::group(['namespace'=>'App\Http\Controllers\Lot', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
     Route::get('/', 'IndexController');
     Route::post('/', 'StoreController');
+    Route::get('/{lot}', 'ShowController');
+//    Route::patch('/{lot}', 'UpdateController');
 });
