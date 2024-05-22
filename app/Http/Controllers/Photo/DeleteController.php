@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Controllers\Photo;
+
+use App\Http\Controllers\Controller;
+use App\Models\Lot;
+use App\Models\Photo;
+use Illuminate\Http\Request;
+
+class DeleteController extends BaseController
+{
+    public function __invoke(Lot $lot, Photo $photo, Request $request){
+        dd(1111111);
+        if(auth()->id() == $lot->seller){
+            $lot->delete();
+            return redirect()->route('lot.edit',$lot->id);
+        }
+        return response()->json([
+            'message'=>'Error: the transferred lot id does not belong to the user.'
+        ], 403);
+    }
+}

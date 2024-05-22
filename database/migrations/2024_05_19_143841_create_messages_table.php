@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('sender');
             $table->unsignedBigInteger('recipient');
             $table->string('content');
-            $table->string('photo');
+            $table->string('Photo');
             $table->timestamps();
             $table->softDeletes();
         });

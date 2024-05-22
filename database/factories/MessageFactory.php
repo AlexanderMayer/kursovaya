@@ -21,7 +21,7 @@ class MessageFactory extends Factory
             'sender'=>User::get()->random()->id,
             'recipient'=>User::get()->random()->id,
             'content'=>fake()->sentence,
-            'photo'=>fake()->word,
+            'Photo'=>fake()->word,
         ];
     }
 }

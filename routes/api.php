@@ -38,15 +38,15 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], funct
     Route::post('/store', 'StoreController');
 });
 
-Route::group(['namespace'=>'App\Http\Controllers\Lot', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
-    Route::get('/', 'IndexController')->name('lot.index');
-    Route::post('/', 'StoreController')->name('lot.store');
-    Route::get('/{lot}', 'ShowController')->name('lot.show');
-    Route::get('/{lot}/edit', 'EditController')->name('lot.edit');
-    Route::patch('/{lot}', 'UpdateController')->name('lot.update');
-    Route::delete('/{lot}', 'DeleteController')->name('lot.delete');
+Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
+    Route::get('/', 'Lot\IndexController')->name('lot.index');
+    Route::post('/', 'Lot\StoreController')->name('lot.store');
+    Route::get('/{lot}', 'Lot\ShowController')->name('lot.show');
+    Route::get('/{lot}/edit', 'Lot\EditController')->name('lot.edit');
+    Route::patch('/{lot}', 'Lot\UpdateController')->name('lot.update');
+    Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
 
-//    Route::post('/{lot}/edit/photo/', 'StorePhotoController');
-//    Route::delete('/{lot}/edit/photo/{photo}', 'DeletePhotoController');
+    Route::post('/{lot}/edit/photo/', 'Photo\StoreController');
+    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController');
 
 });
