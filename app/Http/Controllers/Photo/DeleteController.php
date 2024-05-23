@@ -12,8 +12,10 @@ class DeleteController extends BaseController
     public function __invoke(Lot $lot, Photo $photo, Request $request){
         dd(1111111);
         if(auth()->id() == $lot->seller){
-            $lot->delete();
-            return redirect()->route('lot.edit',$lot->id);
+            if($photo->lot_id == $lot->id){
+                $photo->delete();
+                return redirect()->route('lot.edit',$lot->id);
+            }
         }
         return response()->json([
             'message'=>'Error: the transferred lot id does not belong to the user.'
