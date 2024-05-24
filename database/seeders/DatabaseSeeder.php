@@ -20,8 +20,9 @@ class DatabaseSeeder extends Seeder
     {
         User::factory(4)->create();
         User::factory()->createMany([
-            ['name'=>"qwe", 'surname'=>"qwe", 'login'=>"qwe", 'email'=>"qwe", 'password'=>"qwe",],
-            ['name'=>"admin", 'surname'=>"admin", 'login'=>"admin", 'email'=>"admin", 'password'=>"123",'role_id'=>2],
+            ['name'=>"qwe", 'surname'=>"qwe", 'login'=>"qwe", 'email'=>"qwe@ya.ru", 'password'=>"qwe",],
+            ['name'=>"admin", 'surname'=>"admin", 'login'=>"admin", 'email'=>"admin@ya.ru", 'password'=>"123",'role_id'=>2],
+            ['name'=>"admin2", 'surname'=>"admin2", 'login'=>"admin2", 'email'=>"admin2@ya.ru", 'password'=>"123",'role_id'=>2],
         ]);
 
         Role::factory()->createMany([
@@ -40,7 +41,7 @@ class DatabaseSeeder extends Seeder
 
         Lot::factory(10)->create();
         Photo::factory(4)->create();
-        Message::factory(10)->create();
+        Message::factory(15)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

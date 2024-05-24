@@ -36,11 +36,14 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'
     Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
 
     Route::post('/{lot}/edit/photo/', 'Photo\StoreController');
-    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController');
+    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController'); //Не работает!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 });
 
 Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 'middleware'=>'jwt.auth'], function(){
     Route::get('/', 'IndexController')->name('message.index');
+    Route::get('/{recipient}/create', 'CreateController')->name('message.asd');
     Route::post('/{recipient}', 'StoreController')->name('message.store');
+    Route::delete('/{message}', 'DeleteController')->name('message.delete');
+
 });
