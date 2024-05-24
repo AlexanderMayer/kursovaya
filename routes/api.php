@@ -45,5 +45,9 @@ Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 
     Route::get('/{recipient}/create', 'CreateController')->name('message.asd');
     Route::post('/{recipient}', 'StoreController')->name('message.store');
     Route::delete('/{message}', 'DeleteController')->name('message.delete');
+});
+
+Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'admin', 'middleware'=>'isAdmin'], function(){
+    Route::get('/', 'AdminController@index')->name('admin.index');
 
 });
