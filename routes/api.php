@@ -19,14 +19,22 @@ Route::group([
     Route::post('me', 'App\Http\Controllers\AuthController@me');
 });
 
+
+
+
+Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware' => 'check.guest'], function(){
+    Route::post('/store', 'StoreController');
+    Route::post('/restore', 'RestoreController'); //Принимает почту, куда выслать новый пароль
+});
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
     Route::get('/{user}/edit', 'EditController');
     Route::patch('/{user}', 'UpdateController');
 });
 
-Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user'], function(){
-    Route::post('/store', 'StoreController');
+Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware'=>'jwt.auth'], function(){
+    Route::get('/', 'MainController@index')->name('main.index');
 });
+
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
     Route::get('/', 'Lot\IndexController')->name('lot.index');
@@ -37,7 +45,7 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'
     Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
 
     Route::post('/{lot}/edit/photo/', 'Photo\StoreController');
-    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController'); 
+    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController');
 
 });
 
