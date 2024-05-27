@@ -14,48 +14,14 @@ class SentMail extends Mailable
     use Queueable, SerializesModels;
 
     public $name;
-    public $pass;
 
-    public function __construct($name, $pass)
+    public function __construct($name)
     {
         $this->name = $name;
-        $this->pass = $pass;
     }
 
-    public function envelope(): Envelope
-    {
-        return new Envelope(
-            subject: 'Sent Mail',
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'mail.mail',
-        );
-    }
-
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('mail.mail', ['name' => $this->name, 'pass' => $this->pass]);
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
+        return $this->view('mail.mail')->with(['name' => $this->name])->subject('Test email');
     }
 }
