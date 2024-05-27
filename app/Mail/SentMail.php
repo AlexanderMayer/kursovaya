@@ -14,14 +14,16 @@ class SentMail extends Mailable
     use Queueable, SerializesModels;
 
     public $name;
+    public $pass;
 
-    public function __construct($name)
+    public function __construct($name, $pass)
     {
         $this->name = $name;
+        $this->pass = $pass;
     }
 
     public function build()
     {
-        return $this->view('mail.mail')->with(['name' => $this->name])->subject('Test email');
+        return $this->view('mail.mail')->with(['name' => $this->name, 'pass'=>$this->pass])->subject('Your password');
     }
 }

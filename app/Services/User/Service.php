@@ -16,7 +16,12 @@ class Service{
             'login'=>$data['login'],
             'password'=>$pass,
         ]);
-        Mail::to($data['email'])->send(new SentMail($data['name'], $pass));
+
+        $name= $data['name'];
+        $email= $data['email'];
+
+        Mail::to($email)->send(new SentMail($name, $pass));
+
 
         if($data['surname']){
             $user->surname = $data['surname'];
