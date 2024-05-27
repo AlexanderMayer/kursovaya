@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class DeleteController extends BaseController
 {
     public function __invoke(Lot $lot, Photo $photo, Request $request){
-        dd(1111111);
+        
         if(auth()->id() == $lot->seller){
             if($photo->lot_id == $lot->id){
                 $photo->delete();

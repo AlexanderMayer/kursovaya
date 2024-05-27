@@ -37,7 +37,7 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'
     Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
 
     Route::post('/{lot}/edit/photo/', 'Photo\StoreController');
-    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController'); //Не работает!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController'); 
 
 });
 
