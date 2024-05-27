@@ -37,6 +37,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Message::class, 'recipient');
     }
 
+    public function writtenComplaints(){
+        return $this->hasMany(Complaint::class, 'author');
+    }
+
+    public function receivedComplaints(){
+        return $this->hasMany(Complaint::class, 'target');
+    }
+
 
     protected $hidden = [
         'password',

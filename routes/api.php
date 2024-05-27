@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/sent_mail', 'App\Http\Controllers\TestController@index2');
+Route::get('/test', 'App\Http\Controllers\TestController@index');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -29,10 +29,12 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
     Route::get('/{user}/edit', 'EditController');
     Route::patch('/{user}', 'UpdateController');
+    Route::post('/{user}/complaint', 'ComplaintController');
 });
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware'=>'jwt.auth'], function(){
     Route::get('/', 'MainController@index')->name('main.index');
+
 });
 
 
