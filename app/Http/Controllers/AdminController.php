@@ -16,8 +16,17 @@ class AdminController extends Controller
         ]);
     }
 
-    public function lots(){
-        $lots= Lot::all();
+    public function lots(Request $request){
+        $cat_id = $request->input('category_id');
+
+        $query = Lot::query();
+
+        if ($cat_id) {
+            $lots = $query->where('category_id', $cat_id)->get();
+        } else {
+            $lots = $query->get();
+        }
+
         return $lots;
     }
 
