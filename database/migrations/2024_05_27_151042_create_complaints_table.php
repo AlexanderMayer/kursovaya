@@ -14,6 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('author');
             $table->unsignedBigInteger('target');
             $table->string('content');
+            $table->integer('viewed')->default(0);
+            $table->integer('decision')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

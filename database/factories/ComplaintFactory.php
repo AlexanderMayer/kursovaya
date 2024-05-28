@@ -5,9 +5,7 @@ namespace Database\Factories;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
+
 class ComplaintFactory extends Factory
 {
     /**
@@ -21,6 +19,8 @@ class ComplaintFactory extends Factory
             'author'=> User::get()->random()->id,
             'target'=> User::get()->random()->id,
             'content'=> fake()->sentence,
+            'viewed'=>fake()->numberBetween(0,1),
+            'decision'=>fake()->numberBetween(0,1),
         ];
     }
 }

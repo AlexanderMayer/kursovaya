@@ -60,5 +60,13 @@ Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'admin', 'middleware'=>'isAdmin'], function(){
     Route::get('/', 'AdminController@index')->name('admin.index');
+    Route::get('/lots', 'AdminController@lots');
+    Route::get('/complaints', 'AdminController@complaints');
+    Route::get('/users', 'AdminController@users');
+    Route::get('/users/{user}', 'AdminController@showUser');
+    Route::get('/users/{user}/lots', 'AdminController@userLots');
+    Route::get('/users/{user}/complaints', 'AdminController@userComplaints');
+    Route::get('/users/{user}/{complaint}/change_rating', 'AdminController@userChangeRating');
+    Route::get('/users/{user}/change_status', 'AdminController@userChangeRating'); //ожидает ключи (2шт) в запросе для изменения рейтинга поведения
 
 });
