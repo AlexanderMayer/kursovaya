@@ -62,7 +62,10 @@ class AdminController extends Controller
 
                 if ($data['viewed'] == 1) {
                     $complaint->viewed = $data['viewed'];
-                    $complaint->decision = $data['decision'];
+
+                    if(!$complaint->decision){
+                        $complaint->decision = $data['decision'];
+                    }
                 }
 
                 $complaint->save();
