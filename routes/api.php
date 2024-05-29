@@ -26,11 +26,11 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
     Route::post('/store', 'StoreController');
     Route::post('/restore', 'RestoreController'); //Принимает почту, куда выслать новый пароль
 });
-Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>'jwt.auth'], function(){
+Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>['jwt.auth', 'banFilter']], function(){
     Route::get('/{user}/edit', 'EditController');
     Route::patch('/{user}', 'UpdateController');
     Route::post('/{user}/complaint', 'ComplaintController');
-//    Route::post('/{user}/lots', 'UserLotsController');
+//    Route::post('/{user}/lots', 'UserLotsController'); //этот функционал выполняет роут - api/lots/my
 });
 
 
@@ -39,7 +39,7 @@ Route::get('/main', 'App\Http\Controllers\MainController@index')->name('main.ind
 
 
 
-Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>'jwt.auth'], function(){
+Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>['jwt.auth', 'banFilter']], function(){
     Route::post('/all', 'Lot\AllLotController')->name('lot.all'); //можно фильтровать - ждет категорию
     Route::post('/my', 'Lot\IndexController')->name('lot.index'); //лоты пользователя - должны выдаваться все с возможностью фильтрации. Ждет 2 ключа cat_id, status_id
     Route::post('/', 'Lot\StoreController')->name('lot.store');
@@ -54,7 +54,7 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware
 
 });
 
-Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 'middleware'=>'jwt.auth'], function(){
+Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 'middleware'=>['jwt.auth', 'banFilter']], function(){
     Route::get('/', 'IndexController')->name('message.index');
     Route::get('/{recipient}/create', 'CreateController')->name('message.asd');
     Route::post('/{recipient}', 'StoreController')->name('message.store');
@@ -69,7 +69,7 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'admin', 'middlewar
     Route::get('/users/{user}', 'AdminController@showUser');
     Route::get('/users/{user}/lots', 'AdminController@userLots');
     Route::get('/users/{user}/complaints', 'AdminController@userComplaints');
-    Route::get('/users/{user}/{complaint}/change_rating', 'AdminController@userChangeRating');
-    Route::get('/users/{user}/change_status', 'AdminController@userChangeRating'); //ожидает ключи (2шт) в запросе для изменения рейтинга поведения
+    Route::post('/users/{user}/{complaint}/change_rating', 'AdminController@userChangeRating');//ожидает ключи (2шт) в запросе для изменения рейтинга поведения
+    Route::post('/users/{user}/ban', 'AdminController@banUser');
 
 });

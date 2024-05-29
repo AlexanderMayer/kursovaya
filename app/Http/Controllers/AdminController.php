@@ -104,8 +104,20 @@ class AdminController extends Controller
 
     }
 
-    public function changeStatus(User $user){
+    public function banUser(User $user){
+        $admin= auth()->user();
 
+        if($admin->role_id == 2){
+            if($user->role_id != 2){
+                $user->activity = 'banned';
+                $user->save();
+            }else{
+                return response()->json([
+                    "message"=>"You cannot ban an admin."
+                ]);
+            }
+
+        }
     }
 
 }

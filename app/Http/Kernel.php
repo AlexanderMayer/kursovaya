@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
 
         'isAdmin' => \App\Http\Middleware\AdminMiddleware::class,
         'check.guest' => \App\Http\Middleware\CheckGuest::class,
+        'banFilter' => \App\Http\Middleware\FilterBannedUsersMiddleware::class,
     ];
 }
