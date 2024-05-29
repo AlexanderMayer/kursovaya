@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Service{
     public function store($data, $photos){
+
         $lot = Lot::create([
             'seller'=>auth()->id(),
             'title'=>$data['title'],
@@ -25,7 +26,7 @@ class Service{
                 ]);
             }
         }
-        return $lot;
+        return $lot->load('photos');
     }
 
     public function update($lot, $data){

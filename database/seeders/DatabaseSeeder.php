@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             ['category_name' => 'Книги'],
         ]);
 
-        Lot::factory(10)->create();
+        Lot::factory(44)->create();
         Photo::factory(20)->create();
         Message::factory(15)->create();
         Complaint::factory(20)->create();

@@ -23,9 +23,9 @@ class LotFactory extends Factory
             'buyer' => User::get()->random()->id,
             'title' => fake()->word(),
             'description' => fake()->word(),
-            'status' => fake()->word(),
+            'status' => fake()->randomElement(['active', 'sold', 'inactive']),
             'start_cost' => fake()->numberBetween(1000, 10000),
-            'last_bet' => fake()->numberBetween(1000, 10000),
+            'cost' => 0,
             'bet_step' => fake()->numberBetween(10, 100),
             'category_id' => Category::get()->random()->id,
         ];

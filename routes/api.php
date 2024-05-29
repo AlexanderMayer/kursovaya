@@ -30,6 +30,7 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
     Route::get('/{user}/edit', 'EditController');
     Route::patch('/{user}', 'UpdateController');
     Route::post('/{user}/complaint', 'ComplaintController');
+//    Route::post('/{user}/lots', 'UserLotsController');
 });
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware'=>'jwt.auth'], function(){
@@ -40,12 +41,13 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>'jwt.auth'], function(){
     Route::get('/all', 'Lot\AllLotController')->name('lot.all'); //можно фильтровать - ждет категорию
-    Route::get('/', 'Lot\IndexController')->name('lot.index');
+    Route::post('/my', 'Lot\IndexController')->name('lot.index'); //лоты пользователя - должны выдаваться все с возможностью фильтрации. Ждет 2 ключа cat_id, status_id
     Route::post('/', 'Lot\StoreController')->name('lot.store');
     Route::get('/{lot}', 'Lot\ShowController')->name('lot.show');
     Route::get('/{lot}/edit', 'Lot\EditController')->name('lot.edit');
     Route::patch('/{lot}', 'Lot\UpdateController')->name('lot.update');
     Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
+    Route::post('/{lot}/bet', 'MainController@betUp')->name('lot.betUp'); // ожидает либо новую назначенную цену (new_cost = *цифра*), либо сигнал о том что ставка увеличена на bet_step (bet_up = 1) - должно быть что-то одно
 
     Route::post('/{lot}/edit/photo/', 'Photo\StoreController');
     Route::delete('/{lot}/edit/photo/{photo}', 'Photo\DeleteController');
