@@ -33,14 +33,14 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
 //    Route::post('/{user}/lots', 'UserLotsController');
 });
 
-Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware'=>'jwt.auth'], function(){
-    Route::get('/', 'MainController@index')->name('main.index');
 
-});
+Route::get('/main', 'App\Http\Controllers\MainController@index')->name('main.index');
+
+
 
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>'jwt.auth'], function(){
-    Route::get('/all', 'Lot\AllLotController')->name('lot.all'); //можно фильтровать - ждет категорию
+    Route::post('/all', 'Lot\AllLotController')->name('lot.all'); //можно фильтровать - ждет категорию
     Route::post('/my', 'Lot\IndexController')->name('lot.index'); //лоты пользователя - должны выдаваться все с возможностью фильтрации. Ждет 2 ключа cat_id, status_id
     Route::post('/', 'Lot\StoreController')->name('lot.store');
     Route::get('/{lot}', 'Lot\ShowController')->name('lot.show');
@@ -63,7 +63,7 @@ Route::group(['namespace'=>'App\Http\Controllers\Message', 'prefix'=>'message', 
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'admin', 'middleware'=>'isAdmin'], function(){
     Route::get('/', 'AdminController@index')->name('admin.index');
-    Route::get('/lots', 'AdminController@lots');
+    Route::post('/lots', 'AdminController@lots');//ожидает 2 ключа для фильтрации category_id, status_id
     Route::get('/complaints', 'AdminController@complaints');
     Route::get('/users', 'AdminController@users');
     Route::get('/users/{user}', 'AdminController@showUser');

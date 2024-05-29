@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lot;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,8 +11,26 @@ class MainController extends Controller
 {
 
     public function index(){
+        $query = Lot::query()->orderBy('created_at', 'asc')->where('status', 'active');
+        $currentDate = Carbon::now();
 
+        $lots = $query->get();
+
+        $activeLots = [];
+
+        foreach ($lots as $item) {
+            if ($item->end_bidding < $currentDate) {
+                $item->checkInactiveStatus($item);
+            }
+
+            if ($item->status == 'active') {
+                $activeLots[] = $item;
+            }
+        }
+        return array_slice($activeLots, 0, 10);
     }
+
+
     public function betUp(Lot $lot, Request $request){
         $user= auth()->user();
 

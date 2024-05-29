@@ -45,7 +45,7 @@ class IndexController extends BaseController
         });
 
         return $filtred;
-        
+
     }
 
 //    public function __invoke(){
