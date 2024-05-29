@@ -38,7 +38,8 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'main', 'middleware
 });
 
 
-Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lot', 'middleware'=>'jwt.auth'], function(){
+Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>'jwt.auth'], function(){
+    Route::get('/all', 'Lot\AllLotController')->name('lot.all'); //можно фильтровать - ждет категорию
     Route::get('/', 'Lot\IndexController')->name('lot.index');
     Route::post('/', 'Lot\StoreController')->name('lot.store');
     Route::get('/{lot}', 'Lot\ShowController')->name('lot.show');

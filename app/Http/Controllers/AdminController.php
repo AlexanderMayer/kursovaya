@@ -19,7 +19,7 @@ class AdminController extends Controller
     public function lots(Request $request){
         $cat_id = $request->input('category_id');
 
-        $query = Lot::query();
+        $query = Lot::query()->orderBy('created_at', 'asc');;
 
         if ($cat_id) {
             $lots = $query->where('category_id', $cat_id)->get();
