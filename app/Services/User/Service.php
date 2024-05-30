@@ -37,22 +37,13 @@ class Service{
         }
     }
 
-    public function update($data,  $path= null){
+    public function update($data, $newPass= false){
         $user = auth()->user();
-        $oldAvatar = basename($user->avatar);
-        if(!$oldAvatar){
-            $user->update($data);
-        }else{
-            $user->update($data);
-            Storage::delete($oldAvatar);
-        }
+        $user->update($data);
 
-//        $user->name = $data->name;
-//        $user->surname = $data->surname;
-//        $user->login = $data->login;
-//        $user->password = $data->password;
-//        $user->email = $data->email;
-//        $user->avatar = $data->avatar;
-//        $user->save();
+        if($newPass){
+            $user->password= $newPass;
+            $user->save();
+        }
     }
 }

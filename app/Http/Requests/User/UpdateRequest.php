@@ -23,11 +23,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'name'=>'string',
-            'email'=>'string',
-            'login'=>'string',
-            'password'=>'string',
-            'surname'=>'',
-            'avatar'=>'',
+            'surname'=>'string',
         ];
     }
 }
