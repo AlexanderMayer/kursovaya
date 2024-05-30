@@ -28,7 +28,7 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
 });
 Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middleware'=>['jwt.auth', 'banFilter']], function(){
     Route::get('/{user}/edit', 'EditController');
-    Route::post('/', 'UpdateController'); //Ждет name, surname- обязатльно, необязательно password1, password2
+    Route::post('/', 'UpdateController'); //Ждет name, surname- обязатльно, необязательно password1, password2, avatar
     Route::post('/{user}/complaint', 'ComplaintController');
     Route::delete('/delete', 'DeleteController');
 //    Route::post('/{user}/lots', 'UserLotsController'); //мы здесь можем посмотреть лоты выбранного пользователя

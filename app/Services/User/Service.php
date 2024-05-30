@@ -37,12 +37,25 @@ class Service{
         }
     }
 
-    public function update($data, $newPass= false){
+    public function update($data, $photo, $newPass= false){
         $user = auth()->user();
         $user->update($data);
 
         if($newPass){
+
             $user->password= $newPass;
+            $user->save();
+        }
+
+        if($user->avatar){
+            $oldAvatar = $user->avatar;
+        }
+        if($photo){
+            if ($oldAvatar){
+                Storage::disk('public')->delete($oldAvatar);
+            }
+            $path= $photo->store('uploads', 'public');
+            $user->avatar = $path;
             $user->save();
         }
     }
