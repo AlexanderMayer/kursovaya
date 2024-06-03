@@ -12,7 +12,10 @@ class DeleteController extends Controller
         $user_id = auth()->id();
         if($lot->seller == $user_id){
             $lot->delete();
-            return redirect()->route('lot.index');
+//            return redirect()->route('lot.index');
+            return response()->json([
+                'message'=>"Lot was deleted."
+            ]);
         }
         return response()->json([
             'message'=>'Error: the transferred lot id does not belong to the user.'

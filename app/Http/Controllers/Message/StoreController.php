@@ -18,6 +18,6 @@ class StoreController extends BaseController
         if($res){
             return $res;
         }
-        return redirect()->route('message.index');
+//        return redirect()->route('message.create', $recipient->id);
     }
 }

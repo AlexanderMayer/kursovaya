@@ -21,8 +21,8 @@ return new class extends Migration
             $table->integer('start_cost');
             $table->integer('cost')->default(0);
             $table->integer('bet_step');
-//            $table->dateTime('end_bidding')->default(\Carbon\Carbon::now()->addDays(3));
-            $table->timestamp('end_bidding')->default(\Carbon\Carbon::now()->addMinutes(3));
+            $table->dateTime('end_bidding')->default(\Carbon\Carbon::now()->addDays(3));
+//            $table->timestamp('end_bidding')->default(\Carbon\Carbon::now()->addMinutes(3));
             $table->unsignedBigInteger('category_id');
             $table->timestamps();
             $table->softDeletes();

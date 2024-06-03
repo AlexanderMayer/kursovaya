@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
 
         Lot::factory(44)->create();
         Photo::factory(20)->create();
-        Message::factory(15)->create();
+        Message::factory(25)->create();
         Complaint::factory(20)->create();
 
         // \App\Models\User::factory()->create([

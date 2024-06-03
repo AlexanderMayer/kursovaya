@@ -62,6 +62,10 @@ class MainController extends Controller
             $lot->save();
             Db::commit();
 
+            return response()->json([
+                "message"=>"Your bet is accepted."
+            ]);
+
         }catch(\Exception $exception){
             Db::rollBack();
             return $exception->getMessage();
