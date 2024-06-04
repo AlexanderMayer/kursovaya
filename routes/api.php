@@ -3,11 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/test', 'App\Http\Controllers\TestController@index');
-
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
 
 
 Route::get('/main', 'App\Http\Controllers\MainController@index')->name('main.index');
@@ -44,7 +39,7 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
     Route::post('/', 'UpdateController'); //Ждет name, surname- обязатльно, необязательно password1, password2, avatar
     Route::post('/{user}/complaint', 'ComplaintController');
     Route::delete('/delete', 'DeleteController');
-//    Route::post('/{user}/lots', 'UserLotsController'); //мы здесь можем посмотреть лоты выбранного пользователя
+
 });
 
 Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware'=>['jwt.auth', 'banFilter']], function(){
@@ -52,8 +47,6 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'lots', 'middleware
     Route::post('/my', 'Lot\IndexController')->name('lot.index'); //лоты пользователя - должны выдаваться все с возможностью фильтрации. Ждет 2 ключа cat_id, status_id
     Route::post('/', 'Lot\StoreController')->name('lot.store');
     Route::get('/{lot}', 'Lot\ShowController')->name('lot.show');
-    Route::get('/{lot}/edit', 'Lot\EditController')->name('lot.edit');
-//    Route::patch('/{lot}', 'Lot\UpdateController')->name('lot.update'); Убрать это
     Route::delete('/{lot}', 'Lot\DeleteController')->name('lot.delete');
     Route::post('/{lot}/bet', 'MainController@betUp')->name('lot.betUp'); // ожидает либо новую назначенную цену (new_cost = *цифра*), либо сигнал о том что ставка увеличена на bet_step (bet_up = 1) - должно быть что-то одно
 

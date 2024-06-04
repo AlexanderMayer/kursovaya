@@ -14,10 +14,7 @@ class StoreController extends BaseController
         $data= $request->validated();
         $photo= $request->file('photo');
 
-        $res = $this->service->store($sender, $recipient, $data, $photo);
-        if($res){
-            return $res;
-        }
-//        return redirect()->route('message.create', $recipient->id);
+        $this->service->store($sender, $recipient, $data, $photo);
+
     }
 }

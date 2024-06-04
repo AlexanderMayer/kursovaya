@@ -25,7 +25,6 @@ class StoreRequest extends FormRequest
             'name'=>'required | string',
             'email'=>'required | email',
             'login'=>'required | string',
-//            'password'=>'required | string',
             'surname'=>'required | string',
             'avatar'=>'',
         ];

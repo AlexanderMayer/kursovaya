@@ -48,24 +48,4 @@ class IndexController extends BaseController
 
     }
 
-//    public function __invoke(){
-//        $user = auth()->user();
-//        $data = $user->sold()->get();
-//
-//        $data = $data->map(function ($item) {
-//            $photos = Photo::where('lot_id', $item->id)->get();
-//            $images = $photos->map(function($photo) {
-//                return [
-//                    'id' => $photo->id,
-//                    'adress' => $photo->adress
-//                ];
-//            })->toArray();
-//
-//            $item->images = $images;
-//
-//            return $item;
-//        });
-//
-//        return $data;
-//    }
 }

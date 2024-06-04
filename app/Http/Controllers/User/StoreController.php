@@ -22,5 +22,4 @@ class StoreController extends BaseController
     }
 }
 
-//$path = $request->file('image')->store('uploads', 'public');
-//auth()->user()->avatar = $path;
+

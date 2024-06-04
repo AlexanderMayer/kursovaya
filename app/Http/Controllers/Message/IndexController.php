@@ -41,14 +41,4 @@ class IndexController extends Controller
         ]);
     }
 
-
-
-//    public function __invoke(Request $request){
-//        $user = auth()->user();
-//        $user->load('sentMsg', 'recMsg');
-//
-//        return response()->json([
-//            'user' => $user,
-//        ]);
-//    }
 }
