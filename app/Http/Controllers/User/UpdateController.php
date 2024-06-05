@@ -31,6 +31,5 @@ class UpdateController extends BaseController
         }else{
             $this->service->update($data, $photo);
         }
-
     }
 }

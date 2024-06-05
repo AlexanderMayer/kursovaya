@@ -22,13 +22,10 @@ class Service{
 
         Mail::to($email)->send(new SentMail($name, $pass));
 
-
         if($data['surname']){
             $user->surname = $data['surname'];
             $user->save();
         }
-
-//        $user = User::create($data);
 
         if($path){
             $relativePath = 'uploads/' . basename($path);
@@ -42,11 +39,9 @@ class Service{
         $user->update($data);
 
         if($newPass){
-
             $user->password= $newPass;
             $user->save();
         }
-
         if($user->avatar){
             $oldAvatar = $user->avatar;
         }

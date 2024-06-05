@@ -47,5 +47,4 @@ class IndexController extends BaseController
         return $filtred;
 
     }
-
 }
