@@ -38,6 +38,7 @@ Route::group(['namespace'=>'App\Http\Controllers\User', 'prefix'=>'user', 'middl
     Route::post('/{user}/edit', 'EditController');
     Route::post('/', 'UpdateController'); //Ждет name, surname- обязатльно, необязательно password1, password2, avatar
     Route::post('/{user}/complaint', 'ComplaintController');
+    Route::post('/{user}', 'ShowController');
     Route::delete('/delete', 'DeleteController');
 
 });

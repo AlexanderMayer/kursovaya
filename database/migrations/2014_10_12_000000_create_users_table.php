@@ -20,10 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('login')->unique();
             $table->string('password');
-//            $table->integer('rate_honesty')->default(100);//рейтинг поведения
             $table->integer('rate_decency')->default(100);//рейтинг поведения
-//            $table->integer('buying_count')->default(0);
-//            $table->integer('sales_count')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->dateTime('visited_at')->nullable();
             $table->string('avatar')->nullable();
