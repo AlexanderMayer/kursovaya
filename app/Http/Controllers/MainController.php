@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class MainController extends Controller
 {
+    public function enter(){
+        return view('layouts.main');
+    }
 
     public function index(){
         $query = Lot::query()->orderBy('created_at', 'asc')->where('status', 'active');
