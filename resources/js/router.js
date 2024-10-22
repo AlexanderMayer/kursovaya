@@ -17,6 +17,9 @@ const routes = [
     {   path: '/kurs2.2/public/login',
         component: () => import('./components/LoginComponent.vue'), name:'login'
     },
+    {   path: '/kurs2.2/public/show/:id',
+        component: () => import('./components/LotComponent.vue'), name:'show'
+    },
 ];
 const router = createRouter({
     history: createWebHistory(),

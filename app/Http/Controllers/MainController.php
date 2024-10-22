@@ -14,23 +14,23 @@ class MainController extends Controller
     }
 
     public function index(){
-        $query = Lot::query()->orderBy('created_at', 'asc')->where('status', 'active');
+
+        $query = Lot::query()->orderBy('created_at', 'desc')->where('status', 'active');
         $currentDate = Carbon::now();
 
         $lots = $query->get();
 
-        $activeLots = [];
-
-        foreach ($lots as $item) {
+        $activeLots = $lots->filter(function ($item) use ($currentDate) {
             if ($item->end_bidding < $currentDate) {
                 $item->checkInactiveStatus($item);
             }
+            return $item->status == 'active';
+        });
 
-            if ($item->status == 'active') {
-                $activeLots[] = $item;
-            }
-        }
-        return array_slice($activeLots, 0, 10);
+        $activeLots->load('seller');
+        $activeLots->load('photos');
+
+        return array_slice($activeLots->toArray(), 0, 10);
     }
 
 

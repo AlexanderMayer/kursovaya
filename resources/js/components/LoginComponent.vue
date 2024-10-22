@@ -2,6 +2,7 @@
 import {ref} from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router';
+import Cookies from 'js-cookie';
 
 const router = useRouter();
 const email = ref('');
@@ -16,7 +17,7 @@ const login = async () => {
             }
         ).then( res => {
             const token = res.data.access_token;
-            localStorage.setItem('token', token);
+            Cookies.set('token', token);
             router.push({name: 'start'});
         })
     } catch (error) {
