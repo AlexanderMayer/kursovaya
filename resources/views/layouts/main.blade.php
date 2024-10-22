@@ -11,9 +11,7 @@
 </head>
 <body>
     <div id="app">
-        <div>22222222222222222211122</div>
         <main-component></main-component>
-
     </div>
 </body>
 </html>

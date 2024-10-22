@@ -3,11 +3,17 @@
 </script>
 
 <template>
-    <div>111111111111111-MAIN COMPONENT-11111111111111111</div>
-
-    <router-link :to="{name: 'test'}">Test</router-link>
-    <router-link :to="{name: 'test2'}">Test2</router-link>
-    <router-view></router-view>
+    <div class="container border border-1 rounded">
+        <nav >
+            <router-link class="m-2" :to="{name: 'start'}">Start</router-link>
+            <router-link class="m-2" :to="{name: 'test2'}">Test2</router-link>
+            <router-link class="m-2" :to="{name: 'signUp'}">Регистрация</router-link>
+            <router-link class="m-2" :to="{name: 'login'}">Войти в IT</router-link>
+        </nav>
+        <main>
+            <router-view></router-view>
+        </main>
+    </div>
 </template>
 
 <style scoped>
