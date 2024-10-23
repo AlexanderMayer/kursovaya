@@ -12,6 +12,7 @@ class ShowController extends BaseController
     public function __invoke(Lot $lot){
         $lot_id = $lot->id;
         $lot_photo = Photo::where('lot_id', $lot_id)->get()->pluck('adress')->toArray();
+        $lot->load('seller');
         $lot->images = $lot_photo;
         return $lot;
     }

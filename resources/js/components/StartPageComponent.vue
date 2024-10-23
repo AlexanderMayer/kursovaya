@@ -19,10 +19,15 @@ const data = async () => {
 }
 
 function showLot(id) {
-    router.push({
-        name: 'show',
-        params: {id: id}
-    });
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    if (!token) {
+        router.push({ name: 'login' });
+    } else {
+        router.push({
+            name: 'show',
+            params: { id: id }
+        });
+    }
 }
 
 function calculateRemainingTime(createdAt) {
