@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, onBeforeUnmount} from 'vue';
 import axios from 'axios';
 import {useRoute} from 'vue-router';
 import {useRouter} from 'vue-router';
@@ -10,19 +10,23 @@ let lot = ref([]);
 let name = ref(null);
 let surname = ref(null);
 let new_cost = ref(null);
-let bet_up = ref(null);
+let timers = ref([]);
 
 const data = async () => {
     try {
         const lot_id = route.params.id
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
-
         const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
         lot.value = response.data;
+        const currentTime = new Date();
+        timers.value = [{
+            id: lot.value.id,
+            remainingTime: calculateRemainingTime(lot.value.created_at, currentTime)
+        }];
         name = lot.value.seller.name;
         surname = lot.value.seller.surname;
     } catch (error) {
@@ -80,8 +84,40 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+function calculateRemainingTime(createdAt) {
+    const createdDate = new Date(createdAt);
+    const endDate = new Date(createdDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    return Math.max(endDate - new Date(), 0);
+}
+
+function formatTime(remainingTime) {
+    if (remainingTime === 0) {
+        return 'Аукцион завершен';
+    }
+
+    const days = Math.floor(remainingTime % (1000 * 60 * 60 * 24 * 365) / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+    return `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+}
+
+function startTimer() {
+    const intervalId = setInterval(() => {
+        timers.value.forEach(timer => {
+            timer.remainingTime = Math.max(timer.remainingTime - 1000, 0);
+        });
+    }, 1000);
+
+    onBeforeUnmount(() => {
+        clearInterval(intervalId);
+    });
+}
+
 onMounted(() => {
     data();
+    startTimer();
 });
 
 </script>
@@ -107,13 +143,13 @@ onMounted(() => {
             <div class="col">
                 Продавец: {{ name + ' ' + surname }}
             </div>
-            <!--            <div class="col">-->
-            <!--                {{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}-->
-            <!--            </div>-->
+            <div class="col">
+                {{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}
+            </div>
         </div>
         <div class="row">
-            <p>Текущая цена: {{ lot.cost }}</p>
-            <!--            добавить вывод стартовой цены, если есть-->
+            <p v-if="lot.cost != 0">Текущая цена: {{ lot.cost }}</p>
+            <p v-else>Текущая цена: {{ lot.start_cost }}</p>
             <input type="text" v-model="new_cost" class="form-control w-25">
             <button class=" btn btn-dark" @click.prevent="betUp">Сделать ставку</button>
             <p>Шаг ставки: {{ lot.bet_step }}</p>
