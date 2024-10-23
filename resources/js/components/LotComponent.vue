@@ -14,7 +14,7 @@ let timers = ref([]);
 
 const data = async () => {
     try {
-        const lot_id = route.params.id
+        const lot_id = route.params.id;
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
         const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
             headers: {
