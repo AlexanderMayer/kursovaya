@@ -23,6 +23,17 @@ const data = async () => {
     }
 }
 
+function createLot() {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    if (!token) {
+        router.push({ name: 'login' });
+    } else {
+        router.push({
+            name: 'create',
+        });
+    }
+}
+
 onMounted(() => {
     data();
 });
@@ -52,6 +63,7 @@ onMounted(() => {
             </div>
         </div>
     </div>
+    <input type="submit" @click.prevent="createLot" class="btn btn-success m-3" value="Добавить лот">
 </template>
 
 <style scoped>
