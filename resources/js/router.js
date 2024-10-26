@@ -14,11 +14,20 @@ const routes = [
     {   path: '/kurs2.2/public/show/:id',
         component: () => import('./components/LotComponent.vue'), name:'show'
     },
-    {   path: '/kurs2.2/public/user/edit',
+    {   path: '/kurs2.2/public/user',
         component: () => import('./components/UserComponent.vue'), name:'user'
     },
-    {   path: '/kurs2.2/public/lot_create',
+    {   path: '/kurs2.2/public/lot/create',
         component: () => import('./components/LotCreateComponent.vue'), name:'create'
+    },
+    {   path: '/kurs2.2/public/user/edit',
+        component: () => import('./components/UserEditComponent.vue'), name:'user.edit'
+    },
+    {   path: '/kurs2.2/public/admin_panel',
+        component: () => import('./components/AdminComponent.vue'), name:'admin'
+    },
+    {   path: '/kurs2.2/public/admin_lots_show',
+        component: () => import('./components/AdminLotsComponent.vue'), name:'admin.lots'
     },
 ];
 const router = createRouter({

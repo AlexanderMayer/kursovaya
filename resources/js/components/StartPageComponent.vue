@@ -9,8 +9,8 @@ let timers = ref([]);
 
 const data = async () => {
     try {
-        const response = await axios.get('api/main');
-        lots.value = response.data;
+        const response = await axios.get('http://localhost/kurs2.2/public/api/main');
+        lots.value = response.data.activeLots;
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
     } catch (error) {
         console.error('Ошибка вывода', error);

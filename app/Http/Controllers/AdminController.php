@@ -23,7 +23,6 @@ class AdminController extends Controller
         $query = Lot::query()->orderBy('created_at', 'asc');
 
         if($category_id && $status_id){
-
             $lots = $query->where('category_id', $category_id)->where('status', $status_id)->get();
         }else if($category_id) {
             $lots = $query->where('category_id', $category_id)->get();
@@ -32,6 +31,9 @@ class AdminController extends Controller
         }else{
             $lots = $query->get();
         }
+
+        $lots->load('seller');
+        $lots->load('photos');
 
         return $lots;
     }

@@ -6,6 +6,7 @@ use App\Models\Lot;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Category;
 
 class MainController extends Controller
 {
@@ -19,18 +20,24 @@ class MainController extends Controller
         $currentDate = Carbon::now();
 
         $lots = $query->get();
+        $lots->load('seller');
+        $lots->load('photos');
 
-        $activeLots = $lots->filter(function ($item) use ($currentDate) {
+        $activeLots = [];
+
+        foreach ($lots as $item) {
             if ($item->end_bidding < $currentDate) {
                 $item->checkInactiveStatus($item);
             }
-            return $item->status == 'active';
-        });
 
-        $activeLots->load('seller');
-        $activeLots->load('photos');
+            if ($item->status == 'active') {
+                $activeLots[] = $item;
+            }
+        }
+        $cats = Category::all();
+        $activeLots = array_slice($activeLots, 0, 10);
 
-        return array_slice($activeLots->toArray(), 0, 10);
+        return compact('activeLots', 'cats');
     }
 
 

@@ -21,6 +21,7 @@ function logout() {
             <router-link class="m-2" :to="{name: 'signUp'}">Регистрация</router-link>
             <router-link class="m-2" :to="{name: 'login'}">Войти в IT</router-link>
             <router-link class="m-2" :to="{name: 'user'}">Личный кабинет</router-link>
+            <router-link class="m-2" :to="{name: 'admin'}">Панель администратора</router-link>
             <a class="m-2" @click.prevent="logout">Выйти</a>
         </nav>
         <main>

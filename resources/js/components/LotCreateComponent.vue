@@ -1,51 +1,123 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import {useRoute} from 'vue-router';
-import {useRouter} from 'vue-router';
+import { useRouter } from 'vue-router';
+import Vue3Select from 'vue3-select';
+import 'vue3-select/dist/vue3-select.css';
 
 const router = useRouter();
-const route = useRoute();
 let categories = ref([]);
+let title = ref('');
+let description = ref('');
+let start_cost = ref('');
+let bet_step = ref('');
+let category_id = ref(null);
+let photos = ref([]);
+const searchQuery = ref('');
+let showSuccessModal = ref(false);
 
 const data = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        categories.value = response.data;
-        console.log(response);
+        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        categories.value = responseCategories.data.cats;
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
     }
-}
+};
+
+const createLot = async () => {
+    try {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+
+        const formData = new FormData();
+        formData.append('title', title.value);
+        formData.append('description', description.value);
+        formData.append('start_cost', start_cost.value);
+        formData.append('bet_step', bet_step.value);
+        formData.append('category_id', category_id.value);
+        photos.value.forEach(photo => {
+            formData.append('photos[]', photo);
+        });
+
+        const formDataObj = {};
+        formData.forEach((value, key) => {
+            formDataObj[key] = value;
+        });
+        console.log(JSON.stringify(formDataObj));
+
+        const response = await axios.post('http://localhost/kurs2.2/public/api/lots', formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+
+        showSuccessModal.value = true;
+        clearForm();
+        setTimeout(() => {
+            showSuccessModal.value = false;
+        }, 3000);
+    } catch (error) {
+        console.error('Ошибка создания', error);
+        throw error;
+    }
+};
+
+const clearForm = () => {
+    title.value = '';
+    description.value = '';
+    start_cost.value = '';
+    bet_step.value = '';
+    category_id.value = null;
+    photos.value = [];
+    searchQuery.value = '';
+};
+
+const filteredCategories = computed(() => {
+    if (!searchQuery.value) return categories.value;
+    return categories.value.filter(category =>
+        category.category_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+});
 
 onMounted(() => {
     data();
 });
-
 </script>
 
 <template>
-    <div class="w-25">
-        <input type="text" v-model="title" class="form-control m-3" placeholder="Название лота">
-        <input type="text" v-model="description" class="form-control m-3" placeholder="Описание">
-        <input type="text" v-model="start_cost" class="form-control m-3" placeholder="Начальная стоимость">
-        <input type="text" v-model="bet_step" class="form-control m-3" placeholder="Шаг ставки">
-        <label>Выберите категорию
-            <select class="form-control m-3">
-                <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
-            </select>
-        </label>
-        <input type="file" class="form-control m-3" placeholder="Фотографии">
-        <input type="submit" @click.prevent="signUp" class="btn btn-success m-3" value="Выставить лот">
+    <div class="container mt-4">
+
+        <div class="w-50 mx-auto">
+            <input type="text" v-model="title" class="form-control my-3" placeholder="Название лота">
+            <textarea v-model="description" class="form-control my-3" placeholder="Описание"></textarea>
+            <input type="number" v-model="start_cost" class="form-control my-3" placeholder="Начальная стоимость">
+            <input type="number" v-model="bet_step" class="form-control my-3" placeholder="Шаг ставки">
+            <Vue3Select v-model="category_id" :options="filteredCategories" label="category_name" placeholder="Поиск и выбор категории" @search="val => searchQuery = val" :reduce="category => category.id" />
+            <input type="file" @change="event => photos = Array.from(event.target.files)" multiple class="form-control my-3" placeholder="Фотографии">
+            <button @click.prevent="createLot" class="btn btn-success w-100">Выставить лот</button>
+        </div>
+
+        <div v-if="showSuccessModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Успех</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>Лот успешно добавлен!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <style scoped>
 
+.modal.fade.show.d-block {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
 </style>

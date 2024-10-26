@@ -34,6 +34,17 @@ function createLot() {
     }
 }
 
+function userEdit() {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    if (!token) {
+        router.push({ name: 'login' });
+    } else {
+        router.push({
+            name: 'user.edit',
+        });
+    }
+}
+
 onMounted(() => {
     data();
 });
@@ -64,6 +75,7 @@ onMounted(() => {
         </div>
     </div>
     <input type="submit" @click.prevent="createLot" class="btn btn-success m-3" value="Добавить лот">
+    <input type="submit" @click.prevent="userEdit" class="btn btn-success m-3" value="Редактировать профиль">
 </template>
 
 <style scoped>

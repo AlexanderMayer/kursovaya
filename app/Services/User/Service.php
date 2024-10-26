@@ -37,6 +37,7 @@ class Service{
     public function update($data, $photo, $newPass= false){
         $user = auth()->user();
         $user->update($data);
+        $oldAvatar = null;
 
         if($newPass){
             $user->password= $newPass;
