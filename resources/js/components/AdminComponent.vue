@@ -46,6 +46,29 @@ async function allLots() {
 
 }
 
+async function allUsers() {
+    try {
+        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        role.value = response.data.data.role;
+        if (role.value === '1') {
+            router.push({name: 'login'});
+        } else {
+            router.push({
+                name: 'admin.users',
+            });
+        }
+    } catch (error) {
+        console.error('Ошибка просмотра лотов', error);
+        throw error;
+    }
+
+}
+
 onMounted(() => {
     data();
 });
@@ -54,7 +77,8 @@ onMounted(() => {
 
 <template>
     <h1>Привет Админ</h1>
-    <input type="submit" @click.prevent="allLots" class="btn btn-success m-3" value="Посмотреть лоты">
+    <input type="submit" @click.prevent="allLots" class="btn btn-success m-3" value="Посмотреть все лоты">
+    <input type="submit" @click.prevent="allUsers" class="btn btn-success m-3" value="Посмотреть всех пользователей">
 </template>
 
 <style scoped>

@@ -26,8 +26,11 @@ const routes = [
     {   path: '/kurs2.2/public/admin_panel',
         component: () => import('./components/AdminComponent.vue'), name:'admin'
     },
-    {   path: '/kurs2.2/public/admin_lots_show',
-        component: () => import('./components/AdminLotsComponent.vue'), name:'admin.lots'
+    {   path: '/kurs2.2/public/admin/lots',
+        component: () => import('./components/AdminLotsShowComponent.vue'), name:'admin.lots'
+    },
+    {   path: '/kurs2.2/public/admin/users',
+        component: () => import('./components/AdminUsersShowComponent.vue'), name:'admin.users'
     },
 ];
 const router = createRouter({
