@@ -86,7 +86,9 @@ onBeforeUnmount(() => {
         </nav>
 
         <main class="mt-4">
+
             <router-view></router-view>
+
             <div v-if="showModal" class="modal show d-block" tabindex="-1" style="display: block;">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content bg-dark-subtle">
