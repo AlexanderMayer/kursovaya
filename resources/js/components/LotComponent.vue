@@ -1,8 +1,7 @@
 <script setup>
-import {ref, onMounted, onBeforeUnmount} from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
-import {useRoute} from 'vue-router';
-import {useRouter} from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
@@ -11,6 +10,10 @@ let name = ref(null);
 let surname = ref(null);
 let new_cost = ref(null);
 let timers = ref([]);
+let currentImageIndex = ref(0);
+let isModalOpen = ref(false);
+let isLoading = ref(false);
+let isCostUpdating = ref(false); // New animation state
 
 const data = async () => {
     try {
@@ -27,20 +30,22 @@ const data = async () => {
             id: lot.value.id,
             remainingTime: calculateRemainingTime(lot.value.created_at, currentTime)
         }];
-        name = lot.value.seller.name;
-        surname = lot.value.seller.surname;
+        name.value = lot.value.seller.name;
+        surname.value = lot.value.seller.surname;
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
     }
-}
+};
 
 async function betUp() {
     try {
-        const lot_id = route.params.id
+        isLoading.value = true;
+        isCostUpdating.value = true;
+        const lot_id = route.params.id;
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
 
-        const response = await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
+        await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
             new_cost: new_cost.value,
             bet_up: 0,
             headers: {
@@ -52,15 +57,22 @@ async function betUp() {
     } catch (error) {
         console.error('Ошибка ставки', error);
         throw error;
+    } finally {
+        isLoading.value = false;
+        setTimeout(() => {
+            isCostUpdating.value = false;
+        }, 500);
     }
 }
 
 async function betStepUp(bet_up) {
     try {
-        const lot_id = route.params.id
+        isLoading.value = true;
+        isCostUpdating.value = true;
+        const lot_id = route.params.id;
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
 
-        const response = await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
+        await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
             new_cost: 0,
             bet_up: bet_up,
             headers: {
@@ -71,18 +83,15 @@ async function betStepUp(bet_up) {
     } catch (error) {
         console.error('Ошибка ставки', error);
         throw error;
+    } finally {
+        isLoading.value = false;
+        setTimeout(() => {
+            isCostUpdating.value = false;
+        }, 500);
     }
 }
 
-router.beforeEach((to, from, next) => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
 
-    if (to.name !== 'login' && !token) {
-        next({name: 'login'});
-    } else {
-        next();
-    }
-});
 
 function calculateRemainingTime(createdAt) {
     const createdDate = new Date(createdAt);
@@ -115,49 +124,119 @@ function startTimer() {
     });
 }
 
+function openModal(index) {
+    currentImageIndex.value = index;
+    isModalOpen.value = true;
+}
+
+function closeModal() {
+    isModalOpen.value = false;
+}
+
+function nextImage() {
+    currentImageIndex.value = (currentImageIndex.value + 1) % lot.value.images.length;
+}
+
+function previousImage() {
+    currentImageIndex.value =
+        (currentImageIndex.value - 1 + lot.value.images.length) % lot.value.images.length;
+}
+
 onMounted(() => {
     data();
     startTimer();
 });
-
 </script>
 
 <template>
     <h1>Лот номер: {{ lot.id }}</h1>
-    <div class="container" v-show="lot">
+    <div class="container" v-show="lot" :class="{ 'loading': isLoading }">
         <div class="row">
-            <div class="col" v-if="lot.images">
-                <div v-for="photo in lot.images">
-                    <img class="rounded float-start w-75 h-75" :src="`../storage/${photo}`" alt="Фото лота">
+            <div class="col-md-6">
+                <div id="carouselExample" class="carousel slide" >
+                    <div class="carousel-inner">
+                        <div v-for="(photo, index) in lot.images" :key="index" class="carousel-item" :class="{ active: index === currentImageIndex }">
+                            <div class="zoom-container">
+                                <img class="d-block w-100 lot-image" :src="`../storage/${photo}`" alt="Фото лота" @click="openModal(index)"/>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" @click="previousImage">
+                        <span class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Предыдущий</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" @click="nextImage">
+                        <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Следующий</span>
+                    </button>
                 </div>
             </div>
-            <div class="col" v-else>
-                Нет фотографий
-            </div>
-            <div class="col">
-                {{ lot.title }}
-            </div>
-            <div class="col">
-                {{ lot.description }}
-            </div>
-            <div class="col">
-                Продавец: {{ name + ' ' + surname }}
-            </div>
-            <div class="col">
-                {{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}
+            <div class="col-md-6">
+                <h2>{{ lot.title }}</h2>
+                <p>{{ lot.description }}</p>
+                <p>Продавец: {{ name }} {{ surname }}</p>
+                <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
+                <div>
+                    <p v-if="lot.cost != 0" :class="{ 'cost-updating': isCostUpdating }">Текущая цена: {{ lot.cost }}</p>
+                    <p v-else :class="{ 'cost-updating': isCostUpdating }">Текущая цена: {{ lot.start_cost }}</p>
+                    <input type="text" v-model="new_cost" class="form-control w-50 my-2" placeholder="Введите вашу ставку">
+                    <button class="btn btn-dark" @click.prevent="betUp">Сделать ставку</button>
+                    <p>Шаг ставки: {{ lot.bet_step }}</p>
+                    <button class="btn btn-dark" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <p v-if="lot.cost != 0">Текущая цена: {{ lot.cost }}</p>
-            <p v-else>Текущая цена: {{ lot.start_cost }}</p>
-            <input type="text" v-model="new_cost" class="form-control w-25">
-            <button class=" btn btn-dark" @click.prevent="betUp">Сделать ставку</button>
-            <p>Шаг ставки: {{ lot.bet_step }}</p>
-            <button class=" btn btn-dark" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
+
+        <div v-if="isModalOpen" class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" @click="closeModal"></button>
+                    </div>
+                    <div class="modal-body d-flex justify-content-center align-items-center">
+                        <img :src="`../storage/${lot.images[currentImageIndex]}`" class="img-fluid" alt="Фото лота">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @click="previousImage">Предыдущая</button>
+                        <button class="btn btn-secondary" @click="nextImage">Следующая</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.lot-image {
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+}
 
+.lot-image:hover {
+    transform: scale(1.20);
+}
+
+.zoom-container {
+    overflow: hidden;
+}
+
+.modal-body img {
+    max-height: 90vh;
+    object-fit: contain;
+}
+
+.loading {
+    cursor: wait;
+}
+
+.cost-updating {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: scale(1.05);
+    opacity: 0.7;
+}
+
+.cost-updating:not(.cost-updating) {
+    transform: scale(1);
+    opacity: 1;
+}
 </style>

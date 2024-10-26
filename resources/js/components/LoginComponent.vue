@@ -17,7 +17,7 @@ const login = async () => {
             }
         ).then( res => {
             const token = res.data.access_token;
-            Cookies.set('token', token);
+            Cookies.set('token', token, { expires: 240 / 1440 });
             router.push({name: 'start'});
         })
     } catch (error) {

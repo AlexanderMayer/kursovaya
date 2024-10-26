@@ -21,11 +21,11 @@ const data = async () => {
 function showLot(id) {
     const token = document.cookie.split('; ').find(row => row.startsWith('token='));
     if (!token) {
-        router.push({ name: 'login' });
+        router.push({name: 'login'});
     } else {
         router.push({
             name: 'show',
-            params: { id: id }
+            params: {id: id}
         });
     }
 }
@@ -68,31 +68,49 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>Здесь будут отображаться лоты стартовой страницы</div>
-    <div class="container" v-show="lots.length">
-        <div class="row" v-for="lot in lots" :key="lot.id" @click.prevent="showLot(lot.id)">
-            <div class="col" v-if="lot.photos.length > 0">
-                <img class="rounded float-start w-75 h-75" :src="`./storage/${lot.photos[0].adress}`" alt="Фото лота">
-            </div>
-            <div class="col" v-else>
-                Нет фотографий
-            </div>
-            <div class="col">
-                {{ lot.title }}
-            </div>
-            <div class="col">
-                {{ lot.description }}
-            </div>
-            <div class="col">
-                Продавец: {{ lot.seller.name + ' ' + lot.seller.surname }}
-            </div>
-            <div class="col">
-                {{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}
+    <div class="container">
+        <h2 class="my-4">Активные лоты</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4" v-show="lots.length">
+            <div class="col" v-for="lot in lots" :key="lot.id">
+                <div class="card h-100 lot-card" @click.prevent="showLot(lot.id)">
+                    <img
+                        v-if="lot.photos.length > 0"
+                        :src="`./storage/${lot.photos[0].adress}`"
+                        class="card-img-top lot-image"
+                        alt="Фото лота"
+                    />
+                    <div v-else class="card-img-top bg-light d-flex justify-content-center align-items-center lot-image">
+                        Нет фотографий
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ lot.title }}</h5>
+                        <p class="card-text">{{ lot.description }}</p>
+                        <p class="card-text">
+                            <small class="text-muted">Продавец: {{ lot.seller.name + ' ' + lot.seller.surname }}</small>
+                        </p>
+                        <p class="card-text">{{formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
+                    </div>
+                </div>
             </div>
         </div>
+        <p v-if="!lots.length" class="text-center">Нет активных лотов для отображения</p>
     </div>
 </template>
 
 <style scoped>
+.lot-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
 
+.lot-card:hover {
+    transform: scale(1.10);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.lot-image {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+}
 </style>
