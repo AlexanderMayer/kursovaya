@@ -73,12 +73,7 @@ onMounted(() => {
         <div class="row row-cols-1 row-cols-md-3 g-4" v-show="lots.length">
             <div class="col" v-for="lot in lots" :key="lot.id">
                 <div class="card h-100 lot-card" @click.prevent="showLot(lot.id)">
-                    <img
-                        v-if="lot.photos.length > 0"
-                        :src="`./storage/${lot.photos[0].adress}`"
-                        class="card-img-top lot-image"
-                        alt="Фото лота"
-                    />
+                    <img v-if="lot.photos.length > 0" :src="`./storage/${lot.photos[0].adress}`" class="card-img-top lot-image" alt="Фото лота"/>
                     <div v-else class="card-img-top bg-light d-flex justify-content-center align-items-center lot-image">
                         Нет фотографий
                     </div>

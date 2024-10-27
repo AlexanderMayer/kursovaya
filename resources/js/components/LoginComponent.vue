@@ -25,6 +25,18 @@ const login = async () => {
         throw error;
     }
 }
+
+function userRestore() {
+    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    if (!token) {
+        router.push({ name: 'user.restore' });
+    } else {
+        router.push({
+            name: 'start',
+        });
+    }
+}
+
 </script>
 
 <template>
@@ -32,6 +44,7 @@ const login = async () => {
         <input type="email" v-model="email" class="form-control m-3" placeholder="Почта">
         <input type="password" v-model="password" class="form-control m-3" placeholder="Пароль">
         <input type="submit" @click.prevent="login" class="btn btn-success m-3" value="Войти">
+        <a href="" @click.prevent="userRestore">Забыли пароль?</a>
     </div>
 </template>
 

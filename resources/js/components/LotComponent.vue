@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 const route = useRoute();
@@ -13,25 +14,43 @@ let timers = ref([]);
 let currentImageIndex = ref(0);
 let isModalOpen = ref(false);
 let isLoading = ref(false);
-let isCostUpdating = ref(false); // New animation state
+let isCostUpdating = ref(false);
+let userId = ref(null);
+let sellerId = ref(null);
+let delFlag = ref(false);
 
 const data = async () => {
     try {
         const lot_id = route.params.id;
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
         const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
         lot.value = response.data;
+
         const currentTime = new Date();
         timers.value = [{
             id: lot.value.id,
             remainingTime: calculateRemainingTime(lot.value.created_at, currentTime)
         }];
+
         name.value = lot.value.seller.name;
         surname.value = lot.value.seller.surname;
+        sellerId.value = lot.value.seller.id;
+
+        const responseUserId = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        userId.value = responseUserId.data.data.id;
+
+        if(userId.value === sellerId.value){
+            delFlag.value = true;
+        }
+
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
@@ -43,7 +62,7 @@ async function betUp() {
         isLoading.value = true;
         isCostUpdating.value = true;
         const lot_id = route.params.id;
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
 
         await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
             new_cost: new_cost.value,
@@ -70,7 +89,7 @@ async function betStepUp(bet_up) {
         isLoading.value = true;
         isCostUpdating.value = true;
         const lot_id = route.params.id;
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
 
         await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
             new_cost: 0,
@@ -91,8 +110,6 @@ async function betStepUp(bet_up) {
     }
 }
 
-
-
 function calculateRemainingTime(createdAt) {
     const createdDate = new Date(createdAt);
     const endDate = new Date(createdDate.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -100,9 +117,6 @@ function calculateRemainingTime(createdAt) {
 }
 
 function formatTime(remainingTime) {
-    if (remainingTime === 0) {
-        return 'Аукцион завершен';
-    }
 
     const days = Math.floor(remainingTime % (1000 * 60 * 60 * 24 * 365) / (1000 * 60 * 60 * 24));
     const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -140,6 +154,22 @@ function nextImage() {
 function previousImage() {
     currentImageIndex.value =
         (currentImageIndex.value - 1 + lot.value.images.length) % lot.value.images.length;
+}
+
+async function deleteLot() {
+    try {
+        const lot_id = route.params.id;
+        const token = Cookies.get('token');
+        await axios.delete(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        router.push({ name: 'start' });
+    } catch (error) {
+        console.error('Ошибка удаления лота', error);
+        throw error;
+    }
 }
 
 onMounted(() => {
@@ -184,6 +214,7 @@ onMounted(() => {
                     <p>Шаг ставки: {{ lot.bet_step }}</p>
                     <button class="btn btn-dark" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
                 </div>
+                <button v-if="delFlag" class="btn btn-danger mt-3" @click="deleteLot">Удалить лот </button>
             </div>
         </div>
 

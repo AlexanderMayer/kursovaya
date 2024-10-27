@@ -23,7 +23,7 @@ const routes = [
     {   path: '/kurs2.2/public/user/edit',
         component: () => import('./components/UserEditComponent.vue'), name:'user.edit'
     },
-    {   path: '/kurs2.2/public/admin_panel',
+    {   path: '/kurs2.2/public/admin/panel',
         component: () => import('./components/AdminComponent.vue'), name:'admin'
     },
     {   path: '/kurs2.2/public/admin/lots',
@@ -31,6 +31,15 @@ const routes = [
     },
     {   path: '/kurs2.2/public/admin/users',
         component: () => import('./components/AdminUsersShowComponent.vue'), name:'admin.users'
+    },
+    {   path: '/kurs2.2/public/user/restore',
+        component: () => import('./components/UserRestoreComponent.vue'), name:'user.restore'
+    },
+    {   path: '/kurs2.2/public/user/lots/own',
+        component: () => import('./components/UserLotsComponent.vue'), name:'user.lots'
+    },
+    {   path: '/kurs2.2/public/user/lots',
+        component: () => import('./components/UserLotsComponent.vue'), name:'user.lots'
     },
 ];
 const router = createRouter({
