@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 let categories = ref([]);
@@ -15,6 +16,8 @@ let category_id = ref(null);
 let photos = ref([]);
 const searchQuery = ref('');
 let showSuccessModal = ref(false);
+let showErrorModal = ref(false);
+let errorMessages = ref([]);
 
 const data = async () => {
     try {
@@ -26,9 +29,57 @@ const data = async () => {
     }
 };
 
+const validateForm = () => {
+    errorMessages.value = [];
+    let isValid = true;
+
+    if (!title.value) {
+        errorMessages.value.push('Название лота обязательно для заполнения.');
+        isValid = false;
+    } else if (title.value.length > 254) {
+        errorMessages.value.push('Название лота не должно превышать 254 символа.');
+        isValid = false;
+    }
+
+    if (!description.value) {
+        errorMessages.value.push('Описание обязательно для заполнения.');
+        isValid = false;
+    } else if (description.value.length > 254) {
+        errorMessages.value.push('Описание не должно превышать 254 символа.');
+        isValid = false;
+    }
+
+    if (!start_cost.value) {
+        errorMessages.value.push('Начальная стоимость обязательна для заполнения.');
+        isValid = false;
+    }
+
+    if (!bet_step.value) {
+        errorMessages.value.push('Шаг ставки обязателен для заполнения.');
+        isValid = false;
+    }
+
+    if (category_id.value === null) {
+        errorMessages.value.push('Категория лота обязательна для выбора.');
+        isValid = false;
+    }
+
+    if (photos.value.length === 0) {
+        errorMessages.value.push('Необходимо добавить хотя бы одно фото.');
+        isValid = false;
+    }
+
+    return isValid;
+};
+
 const createLot = async () => {
+    if (!validateForm()) {
+        showErrorModal.value = true;
+        return;
+    }
+
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
 
         const formData = new FormData();
         formData.append('title', title.value);
@@ -39,12 +90,6 @@ const createLot = async () => {
         photos.value.forEach(photo => {
             formData.append('photos[]', photo);
         });
-
-        const formDataObj = {};
-        formData.forEach((value, key) => {
-            formDataObj[key] = value;
-        });
-        console.log(JSON.stringify(formDataObj));
 
         const response = await axios.post('http://localhost/kurs2.2/public/api/lots', formData, {
             headers: {
@@ -89,13 +134,20 @@ onMounted(() => {
     <div class="container mt-4">
 
         <div class="w-50 mx-auto">
-            <input type="text" v-model="title" class="form-control my-3" placeholder="Название лота">
-            <textarea v-model="description" class="form-control my-3" placeholder="Описание"></textarea>
+            <h3>Добавление лота</h3>
+            <input type="text" v-model="title" class="form-control my-3" placeholder="Название лота" maxlength="254">
+            <textarea v-model="description" class="form-control my-3" placeholder="Описание" maxlength="254"></textarea>
             <input type="number" v-model="start_cost" class="form-control my-3" placeholder="Начальная стоимость">
             <input type="number" v-model="bet_step" class="form-control my-3" placeholder="Шаг ставки">
             <Vue3Select v-model="category_id" :options="filteredCategories" label="category_name" placeholder="Поиск и выбор категории" @search="val => searchQuery = val" :reduce="category => category.id" />
             <input type="file" @change="event => photos = Array.from(event.target.files)" multiple class="form-control my-3" placeholder="Фотографии">
             <button @click.prevent="createLot" class="btn btn-success w-100">Выставить лот</button>
+        </div>
+
+        <div v-if="showErrorModal" class="alert alert-danger">
+            <ul>
+                <li v-for="(error, index) in errorMessages" :key="index">{{ error }}</li>
+            </ul>
         </div>
 
         <div v-if="showSuccessModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -105,7 +157,7 @@ onMounted(() => {
                         <h5 class="modal-title">Успех</h5>
                     </div>
                     <div class="modal-body">
-                        <p>Лот успешно добавлен!</p>
+                        <p>Ваш лот добавлен!</p>
                     </div>
                 </div>
             </div>
@@ -115,7 +167,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 .modal.fade.show.d-block {
     opacity: 1;
     transition: opacity 1s ease-in-out;

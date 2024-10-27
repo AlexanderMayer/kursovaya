@@ -1,31 +1,40 @@
 <script setup>
-import {ref, onMounted, onBeforeUnmount} from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
-import {useRouter} from 'vue-router';
+import { useRouter } from 'vue-router';
+import Cookies from "js-cookie";
 
 const router = useRouter();
-let lots = ref([]);
+let allLots = ref([]);
+let displayedLots = ref([]);
 let timers = ref([]);
+let currentPage = ref(1);
+const itemsPerPage = 9;
 
-const data = async () => {
+const Data = async () => {
     try {
         const response = await axios.get('http://localhost/kurs2.2/public/api/main');
-        lots.value = response.data.activeLots;
-        timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
+        allLots.value = response.data.activeLots;
+        updateDisplayedLots();
+        timers.value = allLots.value.map(lot => ({ id: lot.id, remainingTime: calculateRemainingTime(lot.created_at) }));
     } catch (error) {
         console.error('Ошибка вывода', error);
-        throw error;
     }
-}
+};
+
+const updateDisplayedLots = () => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    displayedLots.value = allLots.value.slice(start, start + itemsPerPage);
+};
 
 function showLot(id) {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    const token = Cookies.get('token');
     if (!token) {
-        router.push({name: 'login'});
+        router.push({ name: 'login' });
     } else {
         router.push({
             name: 'show',
-            params: {id: id}
+            params: { id: id }
         });
     }
 }
@@ -61,8 +70,25 @@ function startTimer() {
     });
 }
 
+
+function nextPage() {
+    if (currentPage.value * itemsPerPage < allLots.value.length) {
+        currentPage.value++;
+        updateDisplayedLots();
+        window.scrollTo(0, 0);
+    }
+}
+
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+        updateDisplayedLots();
+        window.scrollTo(0, 0);
+    }
+}
+
 onMounted(() => {
-    data();
+    Data();
     startTimer();
 });
 </script>
@@ -70,8 +96,8 @@ onMounted(() => {
 <template>
     <div class="container">
         <h2 class="my-4">Активные лоты</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-4" v-show="lots.length">
-            <div class="col" v-for="lot in lots" :key="lot.id">
+        <div class="row row-cols-1 row-cols-md-3 g-4" v-show="displayedLots.length">
+            <div class="col" v-for="lot in displayedLots" :key="lot.id">
                 <div class="card h-100 lot-card" @click.prevent="showLot(lot.id)">
                     <img v-if="lot.photos.length > 0" :src="`./storage/${lot.photos[0].adress}`" class="card-img-top lot-image" alt="Фото лота"/>
                     <div v-else class="card-img-top bg-light d-flex justify-content-center align-items-center lot-image">
@@ -83,12 +109,17 @@ onMounted(() => {
                         <p class="card-text">
                             <small class="text-muted">Продавец: {{ lot.seller.name + ' ' + lot.seller.surname }}</small>
                         </p>
-                        <p class="card-text">{{formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
+                        <p class="card-text">{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
                     </div>
                 </div>
             </div>
         </div>
-        <p v-if="!lots.length" class="text-center">Нет активных лотов для отображения</p>
+        <p v-if="!displayedLots.length" class="text-center">Нет активных лотов для отображения</p>
+
+        <div class="d-flex justify-content-between my-4">
+            <button class="btn btn-secondary" @click="prevPage" :disabled="currentPage === 1">Назад</button>
+            <button class="btn btn-secondary" @click="nextPage" :disabled="(currentPage * itemsPerPage) >= allLots.length">Вперед</button>
+        </div>
     </div>
 </template>
 
@@ -107,5 +138,8 @@ onMounted(() => {
     height: 200px;
     width: 100%;
     object-fit: cover;
+}
+.container {
+    max-width: 1820px;
 }
 </style>

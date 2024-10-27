@@ -64,4 +64,8 @@ onMounted(() => {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.container {
+    max-width: 1820px;
+}
 </style>

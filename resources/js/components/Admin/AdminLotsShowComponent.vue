@@ -4,6 +4,7 @@ import axios from 'axios';
 import {useRouter} from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 let lots = ref([]);
@@ -17,13 +18,20 @@ const statuses = ref([
     {id: 'inactive', name: 'Не активные лоты'},
     {id: 'sold', name: 'Проданные лоты'},
 ]);
+
+let currentPage = ref(1);
+const itemsPerPage = 9;
+let displayedLots = ref([]);
+
 const data = async () => {
     try {
         const response = await axios.post('http://localhost/kurs2.2/public/api/admin/lots');
         const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
+
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
+        updateDisplayedLots();
     } catch (error) {
         console.error('Ошибка вывода лотов', error);
         throw error;
@@ -31,7 +39,7 @@ const data = async () => {
 }
 
 function showLot(id) {
-    const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+    const token = Cookies.get('token');
     if (!token) {
         router.push({name: 'login'});
     } else {
@@ -82,6 +90,8 @@ const showLots = async (category_id, currentStatus) => {
         const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
+
+        updateDisplayedLots();
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
     } catch (error) {
         console.error('Ошибка вывода лотов', error);
@@ -95,6 +105,8 @@ const showAllLots = async () => {
         const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
+
+        updateDisplayedLots();
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
     } catch (error) {
         console.error('Ошибка вывода лотов', error);
@@ -116,6 +128,27 @@ const filteredStatuses = computed(() => {
     );
 });
 
+const updateDisplayedLots = () => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    displayedLots.value = lots.value.slice(start, start + itemsPerPage);
+};
+
+function nextPage() {
+    if (currentPage.value * itemsPerPage < lots.value.length) {
+        currentPage.value++;
+        updateDisplayedLots();
+        window.scrollTo(0, 0);
+    }
+}
+
+function prevPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+        updateDisplayedLots();
+        window.scrollTo(0, 0);
+    }
+}
+
 onMounted(() => {
     data();
     startTimer();
@@ -124,6 +157,7 @@ onMounted(() => {
 
 <template>
     <div class="container">
+
         <div class="row mb-4">
             <div class="col-md-6">
                 <Vue3Select v-model="category_id" :options="filteredCategories" label="category_name" placeholder="Поиск и выбор категории" @search="val => searchQuery = val"/>
@@ -132,6 +166,7 @@ onMounted(() => {
                 <Vue3Select v-model="currentStatus" :options="filteredStatuses" label="name" placeholder="Поиск и выбор статуса" @search="val => searchQuery = val"/>
             </div>
         </div>
+
         <div class="mb-4">
             <button @click.prevent="showLots(category_id,currentStatus)" class="btn btn-success me-3">
                 Найти
@@ -140,18 +175,11 @@ onMounted(() => {
                 Показать все лоты
             </button>
         </div>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" v-for="lot in lots" :key="lot.id">
-                <div
-                    class="card h-100 lot-card"
-                    @click.prevent="showLot(lot.id)"
-                >
-                    <img
-                        v-if="lot.photos.length > 0"
-                        :src="`../storage/${lot.photos[0].adress}`"
-                        class="card-img-top lot-image"
-                        alt="Фото лота"
-                    />
+
+        <div class="row row-cols-1 row-cols-md-3 g-4" v-show="displayedLots.length">
+            <div class="col" v-for="lot in displayedLots" :key="lot.id">
+                <div class="card h-100 lot-card" @click.prevent="showLot(lot.id)">
+                    <img v-if="lot.photos.length > 0" :src="`../storage/${lot.photos[0].adress}`" class="card-img-top lot-image" alt="Фото лота"/>
                     <div v-else class="card-img-top bg-light d-flex justify-content-center align-items-center lot-image">
                         Нет фотографий
                     </div>
@@ -162,19 +190,21 @@ onMounted(() => {
                             <small class="text-muted">Продавец: {{ lot.seller.name + ' ' + lot.seller.surname }}</small>
                         </p>
                         <p class="card-text" v-show="lot.status === 'active'">{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
-                        <span
-                            v-if="lot.status === 'active'"
-                            class="badge bg-success">Активный</span>
-                        <span
-                            v-else-if="lot.status === 'inactive'"
-                            class="badge bg-warning text-dark">Не активный</span>
-                        <span
-                            v-else
-                            class="badge bg-danger">Продан</span>
+                        <span v-if="lot.status === 'active'" class="badge bg-success">Активный</span>
+                        <span v-else-if="lot.status === 'inactive'" class="badge bg-warning text-dark">Не активный</span>
+                        <span v-else class="badge bg-danger">Продан</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <p v-if="!displayedLots.length" class="text-center">Нет активных лотов для отображения</p>
+
+        <div class="d-flex justify-content-between my-4">
+            <button class="btn btn-secondary" @click="prevPage" :disabled="currentPage === 1">Назад</button>
+            <button class="btn btn-secondary" @click="nextPage" :disabled="(currentPage * itemsPerPage) >= lots.length">Вперед</button>
+        </div>
+
     </div>
 </template>
 
@@ -191,6 +221,10 @@ onMounted(() => {
     height: 200px;
     width: 100%;
     object-fit: cover;
+}
+
+.container {
+    max-width: 1820px;
 }
 </style>
 

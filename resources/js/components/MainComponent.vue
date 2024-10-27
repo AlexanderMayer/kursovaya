@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, onBeforeUnmount, watchEffect, onUpdated, onBeforeUpdate} from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "vue-router";
@@ -7,8 +7,8 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const showModal = ref(false);
 let intervalId = ref(null);
-let user = ref([]);
-const isLoggedIn = ref(!!Cookies.get('token'))
+let user = ref(null);
+const isNavbarOpen = ref(false); // Новый ref для отслеживания состояния меню
 
 const data = async () => {
     try {
@@ -24,21 +24,15 @@ const data = async () => {
         console.error('Ошибка вывода пользователя', error);
         throw error;
     }
-}
-
-const getToken = () => {
-    isLoggedIn.value = !!Cookies.get('token');
 };
 
 async function logout() {
     Cookies.remove('token');
-    getToken();
     try {
-        await axios.get('api/auth/logout')
-            .then( res => {
-                showModal.value = false;
-                router.push({ name: 'start' });
-    });
+        await axios.get('api/auth/logout').then(res => {
+            user.value = null;
+            router.push({ name: 'start' });
+        });
     } catch (error) {
         console.error('Ошибка при выходе', error);
     }
@@ -46,11 +40,21 @@ async function logout() {
 
 const checkSession = async () => {
     const token = Cookies.get('token');
-    if (!token && isLoggedIn.value) {
-        Cookies.remove('token');
-        openSessionExpiredModal();
+
+    if (!token) {
+        if (user.value !== null) {
+            user.value = null;
+            openSessionExpiredModal();
+        }
+        return;
     }
-}
+
+    if (user.value === null) {
+        await data();
+    }
+};
+
+const isLoggedIn = computed(() => user.value !== null);
 
 function openSessionExpiredModal() {
     showModal.value = true;
@@ -70,34 +74,36 @@ function goToHome() {
     router.push({ name: 'start' });
 }
 
-watchEffect(() => {
-    if (isLoggedIn.value) {
-        data();
-    }
-});
+// Новый метод для переключения состояния меню
+function toggleNavbar() {
+    isNavbarOpen.value = !isNavbarOpen.value;
+}
+
+// Метод для закрытия меню
+function closeNavbar() {
+    isNavbarOpen.value = false;
+}
 
 onMounted(() => {
-    data();
     checkSession();
-    intervalId = setInterval(checkSession, 14400000);
+    intervalId.value = setInterval(checkSession, 1440);
 });
 
 onBeforeUnmount(() => {
     clearInterval(intervalId);
 });
-
 </script>
 
 <template>
-    <div class="container my-4">
+    <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light rounded shadow-sm">
             <div class="container-fluid">
                 <a class="navbar-brand">Аукцион</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" @click="toggleNavbar" :aria-expanded="isNavbarOpen.toString()" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div class="collapse navbar-collapse" :class="{ show: isNavbarOpen }" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0" @click="closeNavbar">
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'start' }">Главная</router-link>
                         </li>
@@ -110,10 +116,10 @@ onBeforeUnmount(() => {
                         <li v-show="isLoggedIn" class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'user' }">Личный кабинет</router-link>
                         </li>
-<!--                        <li v-show="isLoggedIn" class="nav-item">-->
-<!--                            <router-link class="nav-link" :to="{ name: 'user' }">Поиск по категориям</router-link>-->
-<!--                        </li>-->
-                        <li v-show="user.role === 2" class="nav-item">
+                        <li v-show="isLoggedIn" class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'search.lots' }">Поиск по категориям</router-link>
+                        </li>
+                        <li v-show="user?.role === 2" class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'admin' }">Панель администратора</router-link>
                         </li>
                     </ul>
@@ -125,7 +131,7 @@ onBeforeUnmount(() => {
         <main class="mt-4">
             <router-view></router-view>
 
-            <div v-if="showModal && isLoggedIn" class="modal show d-block" tabindex="-1">
+            <div v-if="showModal" class="modal show d-block" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content bg-dark-subtle">
                         <div class="modal-header">
@@ -142,7 +148,6 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
             </div>
-
         </main>
     </div>
 </template>
@@ -152,7 +157,12 @@ onBeforeUnmount(() => {
     font-weight: bold;
     font-size: 1.25rem;
 }
+
 .modal {
     display: block;
+}
+
+.container {
+    max-width: 1820px;
 }
 </style>

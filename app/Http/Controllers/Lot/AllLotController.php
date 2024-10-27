@@ -13,7 +13,7 @@ class AllLotController extends Controller
     {
         $cat_id = $request->input('category_id');
 
-        $query = Lot::query()->orderBy('created_at', 'asc')->where('status', 'active');
+        $query = Lot::query()->orderBy('created_at', 'desc')->where('status', 'active');
 
         if ($cat_id) {
             $query->where('category_id', $cat_id);
@@ -22,6 +22,8 @@ class AllLotController extends Controller
         $currentDate = Carbon::now();
 
         $lots = $query->get();
+        $lots->load('photos');
+        $lots->load('seller');
 
         $activeLots = [];
 

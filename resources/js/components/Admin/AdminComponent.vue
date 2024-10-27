@@ -1,17 +1,17 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import {useRoute} from 'vue-router';
-import {useRouter} from 'vue-router';
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 const route = useRoute();
 let role = ref('');
 
-
 const data = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
         const response = await axios.get('http://localhost/kurs2.2/public/api/admin', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -25,7 +25,7 @@ const data = async () => {
 
 async function allLots() {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
         const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -33,22 +33,19 @@ async function allLots() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({name: 'login'});
+            router.push({ name: 'login' });
         } else {
-            router.push({
-                name: 'admin.lots',
-            });
+            router.push({ name: 'admin.lots' });
         }
     } catch (error) {
         console.error('Ошибка просмотра лотов', error);
         throw error;
     }
-
 }
 
 async function allUsers() {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
         const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -56,29 +53,29 @@ async function allUsers() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({name: 'login'});
+            router.push({ name: 'login' });
         } else {
-            router.push({
-                name: 'admin.users',
-            });
+            router.push({ name: 'admin.users' });
         }
     } catch (error) {
-        console.error('Ошибка просмотра лотов', error);
+        console.error('Ошибка просмотра пользователей', error);
         throw error;
     }
-
 }
 
 onMounted(() => {
     data();
 });
-
 </script>
 
 <template>
-    <h1>Привет Админ</h1>
-    <input type="submit" @click.prevent="allLots" class="btn btn-success m-3" value="Посмотреть все лоты">
-    <input type="submit" @click.prevent="allUsers" class="btn btn-success m-3" value="Посмотреть всех пользователей">
+    <div class="container text-center mt-5">
+        <h3>Панель администратора</h3>
+        <div class="d-flex flex-column align-items-center">
+            <input type="submit" @click.prevent="allLots" class="btn btn-success m-3 w-50" value="Посмотреть все лоты">
+            <input type="submit" @click.prevent="allUsers" class="btn btn-success m-3 w-50" value="Посмотреть всех пользователей">
+        </div>
+    </div>
 </template>
 
 <style scoped>

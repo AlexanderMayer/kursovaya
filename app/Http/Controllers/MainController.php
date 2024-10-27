@@ -35,8 +35,6 @@ class MainController extends Controller
             }
         }
         $cats = Category::all();
-        $activeLots = array_slice($activeLots, 0, 50);
-
         return compact('activeLots', 'cats');
     }
 

@@ -15,7 +15,7 @@ let currentImageIndex = ref(0);
 let isModalOpen = ref(false);
 let isLoading = ref(false);
 let isCostUpdating = ref(false);
-let userId = ref(null);
+let user = ref([]);
 let sellerId = ref(null);
 let delFlag = ref(false);
 
@@ -40,17 +40,16 @@ const data = async () => {
         surname.value = lot.value.seller.surname;
         sellerId.value = lot.value.seller.id;
 
-        const responseUserId = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const responseUser = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        userId.value = responseUserId.data.data.id;
+        user.value = responseUser.data.data;
 
-        if(userId.value === sellerId.value){
+        if(user.value.id === sellerId.value){
             delFlag.value = true;
         }
-
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
@@ -117,7 +116,6 @@ function calculateRemainingTime(createdAt) {
 }
 
 function formatTime(remainingTime) {
-
     const days = Math.floor(remainingTime % (1000 * 60 * 60 * 24 * 365) / (1000 * 60 * 60 * 24));
     const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
@@ -179,15 +177,20 @@ onMounted(() => {
 </script>
 
 <template>
-    <h1>Лот номер: {{ lot.id }}</h1>
-    <div class="container" v-show="lot" :class="{ 'loading': isLoading }">
+    <div class="container mt-4" v-show="lot" :class="{ 'loading': isLoading }">
         <div class="row">
             <div class="col-md-6">
-                <div id="carouselExample" class="carousel slide" >
-                    <div class="carousel-inner">
-                        <div v-for="(photo, index) in lot.images" :key="index" class="carousel-item" :class="{ active: index === currentImageIndex }">
-                            <div class="zoom-container">
-                                <img class="d-block w-100 lot-image" :src="`../storage/${photo}`" alt="Фото лота" @click="openModal(index)"/>
+                <div id="carouselExample" class="carousel slide" style="height: 400px;">
+                    <div class="carousel-inner h-100">
+                        <div v-for="(photo, index) in lot.images" :key="index"
+                             class="carousel-item"
+                             :class="{ active: index === currentImageIndex }">
+                            <div class="d-flex justify-content-center align-items-center h-100">
+                                <img class="d-block lot-image"
+                                     :src="`../storage/${photo}`"
+                                     alt="Фото лота"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                     @click="openModal(index)" />
                             </div>
                         </div>
                     </div>
@@ -202,22 +205,33 @@ onMounted(() => {
                 </div>
             </div>
             <div class="col-md-6">
-                <h2>{{ lot.title }}</h2>
-                <p>{{ lot.description }}</p>
-                <p>Продавец: {{ name }} {{ surname }}</p>
-                <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
-                <div>
-                    <p v-if="lot.cost != 0" :class="{ 'cost-updating': isCostUpdating }">Текущая цена: {{ lot.cost }}</p>
-                    <p v-else :class="{ 'cost-updating': isCostUpdating }">Текущая цена: {{ lot.start_cost }}</p>
-                    <input type="text" v-model="new_cost" class="form-control w-50 my-2" placeholder="Введите вашу ставку">
-                    <button class="btn btn-dark" @click.prevent="betUp">Сделать ставку</button>
-                    <p>Шаг ставки: {{ lot.bet_step }}</p>
-                    <button class="btn btn-dark" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div>
+                            <h2 class="card-title">{{ lot.title }}</h2>
+                            <p class="card-text">{{ lot.description }}</p>
+                            <p class="text-muted">Продавец: {{ name }} {{ surname }}</p>
+                        </div>
+                        <div v-if="lot.status === 'active'">
+                            <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
+                            <p v-if="lot.cost != 0" class="current-cost" :class="{ 'cost-updating': isCostUpdating }">
+                                Текущая цена: {{ lot.cost }}
+                            </p>
+                            <p v-else class="current-cost" :class="{ 'cost-updating': isCostUpdating }">
+                                Текущая цена: {{ lot.start_cost }}
+                            </p>
+                            <div class="mb-3" v-if="!delFlag">
+                                <input type="text" v-model="new_cost" class="form-control my-2" placeholder="Введите вашу ставку">
+                                <button class="btn btn-dark w-100" @click.prevent="betUp">Сделать ставку</button>
+                                <p class="mt-2">Шаг ставки: {{ lot.bet_step }}</p>
+                                <button class="btn btn-secondary w-100" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
+                            </div>
+                        </div>
+                        <button v-if="delFlag" class="btn btn-danger mt-3" @click="deleteLot">Удалить лот</button>
+                    </div>
                 </div>
-                <button v-if="delFlag" class="btn btn-danger mt-3" @click="deleteLot">Удалить лот </button>
             </div>
         </div>
-
         <div v-if="isModalOpen" class="modal show d-block" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
@@ -244,30 +258,31 @@ onMounted(() => {
 }
 
 .lot-image:hover {
-    transform: scale(1.20);
+    transform: scale(1.15);
 }
 
 .zoom-container {
     overflow: hidden;
+    height: 400px;
 }
 
-.modal-body img {
-    max-height: 90vh;
-    object-fit: contain;
+.current-cost {
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.cost-updating {
+    transform: translateY(-10px);
+    opacity: 0.8;
 }
 
 .loading {
     cursor: wait;
 }
 
-.cost-updating {
-    transition: transform 0.5s ease, opacity 0.5s ease;
-    transform: scale(1.05);
-    opacity: 0.7;
-}
-
-.cost-updating:not(.cost-updating) {
-    transform: scale(1);
-    opacity: 1;
+.modal-body img {
+    max-height: 90vh;
+    object-fit: contain;
 }
 </style>
