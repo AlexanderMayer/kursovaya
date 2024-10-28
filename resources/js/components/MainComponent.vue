@@ -8,7 +8,7 @@ const router = useRouter();
 const showModal = ref(false);
 let intervalId = ref(null);
 let user = ref(null);
-const isNavbarOpen = ref(false); // Новый ref для отслеживания состояния меню
+const isNavbarOpen = ref(false);
 
 const data = async () => {
     try {
@@ -74,19 +74,17 @@ function goToHome() {
     router.push({ name: 'start' });
 }
 
-// Новый метод для переключения состояния меню
 function toggleNavbar() {
     isNavbarOpen.value = !isNavbarOpen.value;
 }
 
-// Метод для закрытия меню
 function closeNavbar() {
     isNavbarOpen.value = false;
 }
 
 onMounted(() => {
     checkSession();
-    intervalId.value = setInterval(checkSession, 1440);
+    intervalId.value = setInterval(checkSession, 14400000);
 });
 
 onBeforeUnmount(() => {

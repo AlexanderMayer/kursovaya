@@ -21,9 +21,9 @@ let delFlag = ref(false);
 
 const data = async () => {
     try {
-        const lot_id = route.params.id;
+        const lotId = route.params.id;
         const token = Cookies.get('token');
-        const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
+        const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lotId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -214,7 +214,7 @@ onMounted(() => {
                         </div>
                         <div v-if="lot.status === 'active'">
                             <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
-                            <p v-if="lot.cost != 0" class="current-cost" :class="{ 'cost-updating': isCostUpdating }">
+                            <p v-if="lot.cost !== 0" class="current-cost" :class="{ 'cost-updating': isCostUpdating }">
                                 Текущая цена: {{ lot.cost }}
                             </p>
                             <p v-else class="current-cost" :class="{ 'cost-updating': isCostUpdating }">
@@ -227,7 +227,7 @@ onMounted(() => {
                                 <button class="btn btn-secondary w-100" @click.prevent="betStepUp(lot.bet_step)">Увеличить ставку на шаг</button>
                             </div>
                         </div>
-                        <button v-if="delFlag" class="btn btn-danger mt-3" @click="deleteLot">Удалить лот</button>
+                        <button v-if="delFlag || (user.role === 2)" class="btn btn-danger mt-3" @click="deleteLot">Удалить лот</button>
                     </div>
                 </div>
             </div>
@@ -259,11 +259,6 @@ onMounted(() => {
 
 .lot-image:hover {
     transform: scale(1.15);
-}
-
-.zoom-container {
-    overflow: hidden;
-    height: 400px;
 }
 
 .current-cost {

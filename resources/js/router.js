@@ -32,6 +32,9 @@ const routes = [
     {   path: '/kurs2.2/public/admin/users',
         component: () => import('./components/Admin/AdminUsersShowComponent.vue'), name:'admin.users'
     },
+    {   path: '/kurs2.2/public/admin/users/:id',
+        component: () => import('./components/Admin/AdminUserComponent.vue'), name:'admin.user'
+    },
     {   path: '/kurs2.2/public/user/restore',
         component: () => import('./components/User/UserRestoreComponent.vue'), name:'user.restore'
     },

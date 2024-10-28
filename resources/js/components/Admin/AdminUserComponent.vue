@@ -1,54 +1,43 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
-import { useRoute, useRouter } from 'vue-router';
-import Cookies from 'js-cookie';
+import { onMounted, ref } from 'vue';
+import Cookies from "js-cookie";
+import axios from "axios";
+import { useRoute } from 'vue-router';
 
-const router = useRouter();
 const route = useRoute();
-let user = ref({});
+let user = ref([]);
 
 const data = async () => {
     try {
+        const userId = route.params.id;
         const token = Cookies.get('token');
-        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const response = await axios.post(`http://localhost/kurs2.2/public/api/admin/users/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        user.value = response.data.data;
+        user.value = response.data;
+
     } catch (error) {
         console.error('Ошибка вывода', error);
-        throw error;
     }
-}
+};
 
-function createLot() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'create' });
+const userBan = async (userId) => {
+    try {
+        const token = Cookies.get('token');
+        await axios.post(`http://localhost/kurs2.2/public/api/admin/users/${userId}/ban/`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        alert('Пользователь заблокирован');
+        await data();
+    } catch (error) {
+        console.error('Ошибка при блокировке пользователя', error);
+        alert('Ошибка при блокировке пользователя, попробуйте ещё раз!');
     }
-}
-
-function userLots() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'user.lots' });
-    }
-}
-
-function userEdit() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'user.edit' });
-    }
-}
+};
 
 onMounted(() => {
     data();
@@ -62,7 +51,7 @@ onMounted(() => {
             <div class="col-md-3 d-flex align-items-center">
                 <div class="w-100">
                     <div v-if="user.avatar">
-                        <img class="rounded user-avatar" :src="`../storage/${user.avatar}`" alt="Фото пользователя">
+                        <img class="rounded user-avatar" :src="`/storage/${user.avatar}`" alt="Фото пользователя">
                     </div>
                     <div v-else>
                         <p>Нет аватарки</p>
@@ -75,7 +64,7 @@ onMounted(() => {
                 <p><strong>Логин:</strong> {{ user.login }}</p>
 
                 <div class="my-3">
-                    <h5>Ваш рейтинг:</h5>
+                    <h5>Рейтинг пользователя:</h5>
                     <div class="progress">
                         <div
                             class="progress-bar"
@@ -97,9 +86,7 @@ onMounted(() => {
             </div>
 
             <div class="col-md-3 d-flex flex-column justify-content-evenly">
-                <button @click.prevent="createLot" class="btn btn-success mb-2">Добавить лот</button>
-                <button @click.prevent="userEdit" class="btn btn-success mb-2">Редактировать профиль</button>
-                <button @click.prevent="userLots" class="btn btn-success">Посмотреть мои лоты</button>
+                <button @click.prevent="userBan(user.id)" class="btn btn-danger mb-2">Заблокировать</button>
             </div>
 
         </div>
@@ -112,8 +99,8 @@ onMounted(() => {
 }
 
 .progress {
-    height: 25px;
     max-width: 300px;
+    height: 25px;
     border-radius: 0.5rem;
 }
 

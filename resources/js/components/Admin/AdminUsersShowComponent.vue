@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
+import Cookies from "js-cookie";
 
 const router = useRouter();
 let users = ref([]);
@@ -34,6 +35,18 @@ const filteredUsers = computed(() => {
     );
 });
 
+function showUser(id) {
+    const token = Cookies.get('token');
+    if (!token) {
+        router.push({ name: 'login' });
+    } else {
+        router.push({
+            name: 'admin.user',
+            params: { id: id }
+        });
+    }
+}
+
 onMounted(() => {
     data();
 });
@@ -45,12 +58,14 @@ onMounted(() => {
         <input type="text" v-model="searchQuery" placeholder="Для поиска пользователя введите имя или фамилию или логин или почту..." class="form-control mb-3"/>
         <div class="row">
             <div class="user-item" v-for="user in filteredUsers" :key="user.id">
-                <span>Имя: {{ user.name }}</span>
-                <span> Фамилия: {{ user.surname }}</span>
-                <span> Логин: {{ user.login }}</span>
-                <span> Почта: {{ user.email }}</span>
-                <span v-show="user.role_id === 1 "> Роль: Пользователь</span>
-                <span v-show="user.role_id === 2 "> Роль: Администратор</span>
+                <div @click.prevent="showUser(user.id)">
+                    <span>Имя: {{ user.name }}</span>
+                    <span> Фамилия: {{ user.surname }}</span>
+                    <span> Логин: {{ user.login }}</span>
+                    <span> Почта: {{ user.email }}</span>
+                    <span v-show="user.role_id === 1 "> Роль: Пользователь</span>
+                    <span v-show="user.role_id === 2 "> Роль: Администратор</span>
+                </div>
             </div>
         </div>
     </div>

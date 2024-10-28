@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Lot;
 use App\Http\Controllers\Controller;
 use App\Models\Lot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DeleteController extends Controller
 {
     public function __invoke(Lot $lot, Request $request){
-        $user_id = auth()->id();
-        if($lot->seller == $user_id){
+        $user = Auth::user();
+        if($lot->seller == $user->id || $user->role_id == 2){
             $lot->delete();
-//            return redirect()->route('lot.index');
             return response()->json([
                 'message'=>"Lot was deleted."
             ]);
