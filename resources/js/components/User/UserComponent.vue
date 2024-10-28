@@ -50,6 +50,23 @@ function userEdit() {
     }
 }
 
+const userDelete = async (userId) => {
+    try {
+        const token = Cookies.get('token');
+        await axios.delete(`http://localhost/kurs2.2/public/api/user/delete`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        alert('Ваш профиль удалён');
+        setTimeout(() => {
+            router.push({ name: 'start' });
+        }, 3000);
+    } catch (error) {
+        console.error('Ошибка при удалении пользователя', error);
+    }
+};
+
 onMounted(() => {
     data();
 });
@@ -99,7 +116,8 @@ onMounted(() => {
             <div class="col-md-3 d-flex flex-column justify-content-evenly">
                 <button @click.prevent="createLot" class="btn btn-success mb-2">Добавить лот</button>
                 <button @click.prevent="userEdit" class="btn btn-success mb-2">Редактировать профиль</button>
-                <button @click.prevent="userLots" class="btn btn-success">Посмотреть мои лоты</button>
+                <button @click.prevent="userLots" class="btn btn-success mb-2">Посмотреть мои лоты</button>
+                <button @click.prevent="userDelete" class="btn btn-danger">Удалить профиль</button>
             </div>
 
         </div>

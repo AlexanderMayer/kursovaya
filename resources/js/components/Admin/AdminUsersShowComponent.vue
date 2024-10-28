@@ -2,8 +2,6 @@
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import Vue3Select from 'vue3-select';
-import 'vue3-select/dist/vue3-select.css';
 import Cookies from "js-cookie";
 
 const router = useRouter();
@@ -55,7 +53,7 @@ onMounted(() => {
 <template>
     <div class="container">
         <h2 class="my-4">Список пользователей</h2>
-        <input type="text" v-model="searchQuery" placeholder="Для поиска пользователя введите имя или фамилию или логин или почту..." class="form-control mb-3"/>
+        <input type="text" v-model="searchQuery" placeholder="Для поиска пользователя введите имя или фамилию или логин или почту..." class="form-control mb-3 w-100"/>
         <div class="row">
             <div class="user-item" v-for="user in filteredUsers" :key="user.id">
                 <div @click.prevent="showUser(user.id)">
