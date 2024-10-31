@@ -77,32 +77,32 @@ onMounted(() => {
 
 <template>
     <div class="container">
-        <h2 class="my-4">Список жалоб</h2>
+        <h2 class="my-4 text-center text-md-start">Список жалоб</h2>
         <input type="text" v-model="searchQuery" placeholder="Искать по имени, фамилии или логину..." class="form-control mb-3" />
 
         <div class="row">
             <div v-for="complaint in filteredComplaints" :key="complaint.id" class="col-12 mb-3 complaint-item card" :class="{ 'bg-lightgray': complaint.isViewed }">
-                <div class="card-body d-flex">
-                    <div class="fixed-section w-25">
+                <div class="card-body d-md-flex">
+                    <div class="fixed-section w-100 w-md-25">
                         <h5>Отправитель:</h5>
                         <p><strong>Имя:</strong> {{ complaint.author.name }}</p>
                         <p><strong>Фамилия:</strong> {{ complaint.author.surname }}</p>
                         <p><strong>Логин:</strong> {{ complaint.author.login }}</p>
                     </div>
 
-                    <div class="fixed-section w-25">
+                    <div class="fixed-section w-100 w-md-25 mt-3 mt-md-0">
                         <h5>Продавец:</h5>
                         <p><strong>Имя:</strong> {{ complaint.target.name }}</p>
                         <p><strong>Фамилия:</strong> {{ complaint.target.surname }}</p>
                         <p><strong>Логин:</strong> {{ complaint.target.login }}</p>
                     </div>
 
-                    <div class="fixed-section w-50">
+                    <div class="fixed-section w-100 w-md-50 mt-3 mt-md-0">
                         <h5>Описание жалобы:</h5>
                         <p>{{ complaint.content }}</p>
                     </div>
 
-                    <div class="action-section d-flex flex-column align-items-end p-2">
+                    <div class="action-section d-flex flex-column align-items-end p-2 w-100 w-md-auto mt-3 mt-md-0">
                         <select v-model="complaint.viewed" class="form-select mb-2">
                             <option value="0">Не просмотрено</option>
                             <option value="1">Просмотрено</option>
@@ -158,5 +158,19 @@ onMounted(() => {
 .container {
     max-width: 1820px;
 }
+
+@media (max-width: 800px) {
+    .fixed-section {
+        border-right: none;
+    }
+    .complaint-item {
+        flex-direction: column;
+        padding: 10px;
+    }
+    .action-section {
+        align-items: stretch;
+    }
+}
 </style>
+
 
