@@ -16,6 +16,9 @@ const routes = [
     {   path: '/user',
         component: () => import('./components/User/UserComponent.vue'), name:'user'
     },
+    {   path: '/user/:id',
+        component: () => import('./components/User/UserShowSellerComponent.vue'), name:'user.show.seller'
+    },
     {   path: '/user/lot/create',
         component: () => import('./components/User/UserLotCreateComponent.vue'), name:'create'
     },
@@ -42,6 +45,9 @@ const routes = [
     },
     {   path: '/search/lots',
         component: () => import('./components/User/UserSearchLotsComponent.vue'), name:'search.lots'
+    },
+    {   path: '/user/complaints/:id',
+        component: () => import('./components/User/UserComplaintsComponent.vue'), name:'user.complaints'
     },
 ];
 const router = createRouter({

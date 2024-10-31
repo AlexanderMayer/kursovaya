@@ -171,16 +171,34 @@ function previousImage() {
 
 async function deleteLot() {
     try {
-        const lot_id = route.params.id;
+        const lotId = route.params.id;
         const token = Cookies.get('token');
-        await axios.delete(`api/lots/${lot_id}`, {
+        await axios.delete(`${thisUrl()}/lots/${lotId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        router.push({ name: 'start' });
+        await router.push({ name: 'start' });
     } catch (error) {
         console.error('Ошибка удаления лота', error);
+        throw error;
+    }
+}
+
+async function showSeller(sellerId) {
+    try {
+        const token = Cookies.get('token');
+        await axios.post(`${thisUrl()}/user/${sellerId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        await router.push({
+            name: 'user.show.seller',
+            params: { id:sellerId }
+        });
+    } catch (error) {
+        console.error('Ошибка просмотра продаыца', error);
         throw error;
     }
 }
@@ -225,7 +243,7 @@ onMounted(() => {
                         <div>
                             <h2 class="card-title">{{ lot.title }}</h2>
                             <p class="card-text">{{ lot.description }}</p>
-                            <p v-if="(name !== null) && (surname !== null)" class="text-muted">Продавец: {{ name }} {{ surname }}</p>
+                            <p @click.prevent="showSeller(sellerId)" v-if="(name !== null) && (surname !== null)" class="btn btn-sm btn-outline-secondary">Продавец: {{ name }} {{ surname }}</p>
                         </div>
                         <div v-if="lot.status === 'active'">
                             <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>

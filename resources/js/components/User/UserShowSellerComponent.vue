@@ -8,78 +8,46 @@ import { thisUrl } from "../../api.js";
 const router = useRouter();
 const route = useRoute();
 let user = ref({});
-let showDeleteConfirm = ref(false);
-let showDeleteSuccess = ref(false);
 let complaints = ref(null);
 
 const data = async () => {
     try {
+        const sellerId = route.params.id;
         const token = Cookies.get('token');
-        const response = await axios.post(`${thisUrl()}/user/edit`, {
+        const response = await axios.post(`${thisUrl()}/user/${sellerId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
         user.value = response.data.data;
 
+        complaints = Math.abs((user.value.rate_decency / 5) - 20);
+
+
         const avatarDefault = 'uploads/avatar.png';
         if (!user.value.avatar) {
             user.value.avatar = avatarDefault;
         }
-
-        complaints = Math.abs((user.value.rate_decency / 5) - 20);
-
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
     }
 };
 
-function createLot() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'create' });
-    }
-}
-
-function userLots() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'user.lots' });
-    }
-}
-
-function userEdit() {
-    const token = Cookies.get('token');
-    if (!token) {
-        router.push({ name: 'login' });
-    } else {
-        router.push({ name: 'user.edit' });
-    }
-}
-
-const confirmDelete = () => {
-    showDeleteConfirm.value = true;
-};
-
-const userDelete = async () => {
+const complaintsUser = async () => {
     try {
+        const sellerId = route.params.id;
         const token = Cookies.get('token');
-        await axios.delete(`${thisUrl()}/user/delete`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        showDeleteConfirm.value = false;
-        showDeleteSuccess.value = true;
-        setTimeout(() => {
-            showDeleteSuccess.value = false;
-            router.push({ name: 'start' });
-        }, 3000);
+        if (token) {
+        await router.push({
+            name: 'user.complaints',
+            params: { id: sellerId },
+        });}
+        else {
+            await router.push({
+                name: 'login',
+            });
+        }
     } catch (error) {
         console.error('Ошибка при удалении пользователя', error);
     }
@@ -97,7 +65,7 @@ onMounted(() => {
             <div class="col-md-3 d-flex align-items-center">
                 <div class="w-100">
                     <div v-if="user.avatar">
-                        <img class="rounded user-avatar" :src="`./storage/${user.avatar}`" alt="Фото пользователя">
+                        <img class="rounded user-avatar" :src="`../storage/${user.avatar}`" alt="Фото пользователя">
                     </div>
                 </div>
             </div>
@@ -106,7 +74,7 @@ onMounted(() => {
                 <p><strong>Логин:</strong> {{ user.login }}</p>
                 <p><strong>Жалоб:</strong> {{ complaints }}</p>
                 <div class="my-3">
-                    <h5>Ваш рейтинг:</h5>
+                    <h5>Рейтинг пользователя:</h5>
                     <div class="progress">
                         <div
                             class="progress-bar"
@@ -128,27 +96,11 @@ onMounted(() => {
             </div>
 
             <div class="col-md-3 d-flex flex-column justify-content-evenly">
-                <button @click.prevent="createLot" class="btn btn-success mb-2">Добавить лот</button>
-                <button @click.prevent="userEdit" class="btn btn-success mb-2">Редактировать профиль</button>
-                <button @click.prevent="userLots" class="btn btn-success mb-2">Посмотреть мои лоты</button>
-                <button @click.prevent="confirmDelete" class="btn btn-danger">Удалить профиль</button>
+                <button @click.prevent="complaintsUser()" class="btn btn-warning">Пожаловаться</button>
             </div>
         </div>
     </div>
 
-    <div v-if="showDeleteConfirm" class="modal-overlay">
-        <div class="modal-content">
-            <p>Вы уверены, что хотите удалить профиль?</p>
-            <button @click="userDelete" class="btn btn-danger mb-2">Удалить</button>
-            <button @click="showDeleteConfirm = false" class="btn btn-secondary">Отмена</button>
-        </div>
-    </div>
-
-    <div v-if="showDeleteSuccess" class="modal-overlay">
-        <div class="modal-content">
-            <p>Ваш профиль успешно удалён</p>
-        </div>
-    </div>
 </template>
 
 <style scoped>

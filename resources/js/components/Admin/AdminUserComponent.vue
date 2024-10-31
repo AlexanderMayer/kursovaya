@@ -61,7 +61,7 @@ onMounted(() => {
 <template>
     <div class="container my-4" v-show="user">
         <div class="row">
-            <!-- User Info -->
+
             <div class="col-md-3 d-flex align-items-center">
                 <div class="w-100">
                     <div>
