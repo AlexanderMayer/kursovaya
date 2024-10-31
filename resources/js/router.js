@@ -49,6 +49,9 @@ const routes = [
     {   path: '/user/complaints/:id',
         component: () => import('./components/User/UserComplaintsComponent.vue'), name:'user.complaints'
     },
+    {   path: '/admin/complaints',
+        component: () => import('./components/Admin/AdminComplaintsComponent.vue'), name:'admin.complaints'
+    },
 ];
 const router = createRouter({
     history: createWebHistory('/kurs2.2/public'),

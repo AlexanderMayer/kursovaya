@@ -40,7 +40,9 @@ class AdminController extends Controller
     }
 
     public function complaints(){
-        $compl= Complaint::all();
+        $compl= Complaint::query()->orderBy('id', 'desc')->get();
+        $compl->load('author');
+        $compl->load('target');
         return $compl;
     }
 
@@ -117,6 +119,22 @@ class AdminController extends Controller
             }else{
                 return response()->json([
                     "message"=>"You cannot ban an admin."
+                ]);
+            }
+
+        }
+    }
+
+    public function unbanUser(User $user){
+        $admin= auth()->user();
+
+        if($admin->role_id == 2){
+            if($user->role_id != 2){
+                $user->activity = 'active';
+                $user->save();
+            }else{
+                return response()->json([
+                    "message"=>""
                 ]);
             }
 

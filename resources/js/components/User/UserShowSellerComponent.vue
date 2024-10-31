@@ -96,7 +96,7 @@ onMounted(() => {
             </div>
 
             <div class="col-md-3 d-flex flex-column justify-content-evenly">
-                <button @click.prevent="complaintsUser()" class="btn btn-warning">Пожаловаться</button>
+                <button @click.prevent="complaintsUser" class="btn btn-warning">Пожаловаться</button>
             </div>
         </div>
     </div>

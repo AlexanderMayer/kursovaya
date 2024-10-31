@@ -54,12 +54,32 @@ async function allUsers() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({ name: 'login' });
+            router.push({ name: 'start' });
         } else {
             router.push({ name: 'admin.users' });
         }
     } catch (error) {
         console.error('Ошибка просмотра пользователей', error);
+        throw error;
+    }
+}
+
+async function complaintsShow() {
+    try {
+        const token = Cookies.get('token');
+        const response = await axios.post(`${thisUrl()}/user/edit`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        role.value = response.data.data.role;
+        if (role.value === '1') {
+            router.push({ name: 'login' });
+        } else {
+            router.push({ name: 'admin.complaints' });
+        }
+    } catch (error) {
+        console.error('Ошибка просмотра жалоб', error);
         throw error;
     }
 }
@@ -75,6 +95,7 @@ onMounted(() => {
         <div class="d-flex flex-column align-items-center">
             <input type="submit" @click.prevent="allLots" class="btn btn-success m-3 w-50" value="Посмотреть все лоты">
             <input type="submit" @click.prevent="allUsers" class="btn btn-success m-3 w-50" value="Посмотреть всех пользователей">
+            <input type="submit" @click.prevent="complaintsShow" class="btn btn-success m-3 w-50" value="Посмотреть жалобы">
         </div>
     </div>
 </template>

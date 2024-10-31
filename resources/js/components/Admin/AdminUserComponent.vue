@@ -53,6 +53,21 @@ const userBan = async (userId) => {
     }
 };
 
+const userUnban = async (userId) => {
+    try {
+        const token = Cookies.get('token');
+        await axios.post(`${thisUrl()}/admin/users/${userId}/unban`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        alert('Пользователь разблокирован');
+        await data();
+    } catch (error) {
+        console.error('Ошибка при разблокировке пользователя', error);
+    }
+};
+
 onMounted(() => {
     data();
 });
@@ -96,6 +111,9 @@ onMounted(() => {
 
             <div class="col-md-3 d-flex flex-column justify-content-evenly" v-if="user.activity === 'active'">
                 <button @click.prevent="confirmBan" class="btn btn-danger mb-2">Заблокировать</button>
+            </div>
+            <div class="col-md-3 d-flex flex-column justify-content-evenly" v-else>
+                <button @click.prevent="userUnban(user.id)" class="btn btn-danger mb-2">Разблокировать</button>
             </div>
         </div>
     </div>

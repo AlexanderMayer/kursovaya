@@ -27,6 +27,7 @@ Route::group(['namespace'=>'App\Http\Controllers', 'prefix'=>'admin', 'middlewar
     Route::post('/users/{user}/complaints', 'AdminController@userComplaints');
     Route::post('/users/{user}/{complaint}/change_rating', 'AdminController@userChangeRating');//ожидает ключи (2шт) в запросе для изменения рейтинга поведения
     Route::post('/users/{user}/ban', 'AdminController@banUser');
+    Route::post('/users/{user}/unban', 'AdminController@unbanUser');
 
 });
 

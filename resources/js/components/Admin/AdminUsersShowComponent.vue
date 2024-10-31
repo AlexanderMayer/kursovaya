@@ -11,7 +11,7 @@ const searchQuery = ref('');
 
 const data = async () => {
     try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+        const token = Cookies.get('token');
         const response = await axios.post(`${thisUrl()}/admin/users`, {
             headers: {
                 Authorization: `Bearer ${token}`
