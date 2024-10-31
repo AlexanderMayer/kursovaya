@@ -3,25 +3,33 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import { thisUrl } from "../../api.js";
 
 const router = useRouter();
 const route = useRoute();
 let user = ref({});
+let showDeleteConfirm = ref(false);
+let showDeleteSuccess = ref(false);
 
 const data = async () => {
     try {
         const token = Cookies.get('token');
-        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const response = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
         user.value = response.data.data;
+
+        const avatarDefault = 'uploads/avatar.png';
+        if (!user.value.avatar) {
+            user.value.avatar = avatarDefault;
+        }
     } catch (error) {
         console.error('Ошибка вывода', error);
         throw error;
     }
-}
+};
 
 function createLot() {
     const token = Cookies.get('token');
@@ -50,16 +58,22 @@ function userEdit() {
     }
 }
 
-const userDelete = async (userId) => {
+const confirmDelete = () => {
+    showDeleteConfirm.value = true;
+};
+
+const userDelete = async () => {
     try {
         const token = Cookies.get('token');
-        await axios.delete(`http://localhost/kurs2.2/public/api/user/delete`, {
+        await axios.delete(`${thisUrl()}/user/delete`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        alert('Ваш профиль удалён');
+        showDeleteConfirm.value = false;
+        showDeleteSuccess.value = true;
         setTimeout(() => {
+            showDeleteSuccess.value = false;
             router.push({ name: 'start' });
         }, 3000);
     } catch (error) {
@@ -79,18 +93,16 @@ onMounted(() => {
             <div class="col-md-3 d-flex align-items-center">
                 <div class="w-100">
                     <div v-if="user.avatar">
-                        <img class="rounded user-avatar" :src="`../storage/${user.avatar}`" alt="Фото пользователя">
+                        <img class="rounded user-avatar" :src="`./storage/${user.avatar}`" alt="Фото пользователя">
                     </div>
                     <div v-else>
                         <p>Нет аватарки</p>
                     </div>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <h3>{{ user.name }} {{ user.surname }}</h3>
                 <p><strong>Логин:</strong> {{ user.login }}</p>
-
                 <div class="my-3">
                     <h5>Ваш рейтинг:</h5>
                     <div class="progress">
@@ -117,9 +129,22 @@ onMounted(() => {
                 <button @click.prevent="createLot" class="btn btn-success mb-2">Добавить лот</button>
                 <button @click.prevent="userEdit" class="btn btn-success mb-2">Редактировать профиль</button>
                 <button @click.prevent="userLots" class="btn btn-success mb-2">Посмотреть мои лоты</button>
-                <button @click.prevent="userDelete" class="btn btn-danger">Удалить профиль</button>
+                <button @click.prevent="confirmDelete" class="btn btn-danger">Удалить профиль</button>
             </div>
+        </div>
+    </div>
 
+    <div v-if="showDeleteConfirm" class="modal-overlay">
+        <div class="modal-content">
+            <p>Вы уверены, что хотите удалить профиль?</p>
+            <button @click="userDelete" class="btn btn-danger mb-2">Удалить</button>
+            <button @click="showDeleteConfirm = false" class="btn btn-secondary">Отмена</button>
+        </div>
+    </div>
+
+    <div v-if="showDeleteSuccess" class="modal-overlay">
+        <div class="modal-content">
+            <p>Ваш профиль успешно удалён</p>
         </div>
     </div>
 </template>
@@ -128,32 +153,43 @@ onMounted(() => {
 .container {
     max-width: 1820px;
 }
-
 .progress {
     height: 25px;
     max-width: 300px;
     border-radius: 0.5rem;
 }
-
 .progress-bar {
     line-height: 25px;
     font-size: 1rem;
 }
-
 h3 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
-
 .user-avatar {
     width: 100%;
     height: auto;
 }
-
-@media (max-width: 800px) {
-    .user-avatar {
-        max-height: 200px;
-        object-fit: scale-down;
-    }
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+}
+button.btn {
+    margin: 0 10px;
 }
 </style>

@@ -34,6 +34,7 @@ class AdminController extends Controller
 
         $lots->load('seller');
         $lots->load('photos');
+        $lots->load('buyer');
 
         return $lots;
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 let lots = ref([]);
@@ -18,7 +19,7 @@ const searchQuery = ref('');
 
 const Data = async () => {
     try {
-        const response = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.get(`${thisUrl()}/main`);
         lots.value = response.data.activeLots;
         categories.value = response.data.cats;
 
@@ -100,8 +101,8 @@ const filteredCategories = computed(() => {
 
 const showAllLots = async () => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots/all');
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.post(`${thisUrl()}/lots/all`);
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
 
@@ -116,10 +117,10 @@ const showAllLots = async () => {
 
 const showLots = async (category_id) => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots/all', {
+        const response = await axios.post(`${thisUrl()}/lots/all`, {
             category_id: category_id
         });
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
 

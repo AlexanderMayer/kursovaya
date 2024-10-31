@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 let categories = ref([]);
@@ -21,7 +22,7 @@ let errorMessages = ref([]);
 
 const data = async () => {
     try {
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
     } catch (error) {
         console.error('Ошибка вывода', error);
@@ -91,7 +92,7 @@ const createLot = async () => {
             formData.append('photos[]', photo);
         });
 
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots', formData, {
+        const response = await axios.post(`${thisUrl()}/lots`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             }

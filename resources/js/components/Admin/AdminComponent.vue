@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -12,7 +13,7 @@ let role = ref('');
 const data = async () => {
     try {
         const token = Cookies.get('token');
-        const response = await axios.get('http://localhost/kurs2.2/public/api/admin', {
+        const response = await axios.get(`${thisUrl()}/admin`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -26,7 +27,7 @@ const data = async () => {
 async function allLots() {
     try {
         const token = Cookies.get('token');
-        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const response = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -46,7 +47,7 @@ async function allLots() {
 async function allUsers() {
     try {
         const token = Cookies.get('token');
-        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const response = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

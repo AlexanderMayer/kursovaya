@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
+import {thisUrl} from "../api.js";
 
 const router = useRouter();
 let allLots = ref([]);
@@ -13,7 +14,7 @@ const itemsPerPage = 9;
 
 const Data = async () => {
     try {
-        const response = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.get(`${thisUrl()}/main`);
         allLots.value = response.data.activeLots;
         updateDisplayedLots();
         timers.value = allLots.value.map(lot => ({ id: lot.id, remainingTime: calculateRemainingTime(lot.created_at) }));

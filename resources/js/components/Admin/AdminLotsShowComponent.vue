@@ -5,6 +5,7 @@ import {useRouter} from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 let lots = ref([]);
@@ -25,8 +26,8 @@ let displayedLots = ref([]);
 
 const data = async () => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/admin/lots');
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.post(`${thisUrl()}/admin/lots`);
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
 
@@ -83,11 +84,11 @@ function startTimer() {
 
 const showLots = async (category_id, currentStatus) => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/admin/lots', {
+        const response = await axios.post(`${thisUrl()}/admin/lots`, {
             category_id: category_id,
             status_id: currentStatus,
         });
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
 
@@ -101,8 +102,8 @@ const showLots = async (category_id, currentStatus) => {
 
 const showAllLots = async () => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/admin/lots');
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.post(`${thisUrl()}/admin/lots`);
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
 
@@ -186,8 +187,14 @@ onMounted(() => {
                     <div class="card-body">
                         <h5 class="card-title">{{ lot.title }}</h5>
                         <p class="card-text">{{ lot.description }}</p>
-                        <p class="card-text">
+                        <p class="card-text" v-if="lot.seller">
                             <small class="text-muted">Продавец: {{ lot.seller.name + ' ' + lot.seller.surname }}</small>
+                        </p>
+                        <p class="card-text" v-if="lot.buyer">
+                            <small class="text-muted">Покупатель: {{ lot.buyer.name + ' ' + lot.buyer.surname }}</small>
+                        </p>
+                        <p class="card-text" v-else>
+                            <small class="text-muted">Лот не был куплен</small>
                         </p>
                         <p class="card-text" v-show="lot.status === 'active'">{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
                         <span v-if="lot.status === 'active'" class="badge bg-success">Активный</span>

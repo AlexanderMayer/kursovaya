@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 let users = ref([]);
@@ -11,7 +12,7 @@ const searchQuery = ref('');
 const data = async () => {
     try {
         const token = document.cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
-        const response = await axios.post('http://localhost/kurs2.2/public/api/admin/users', {
+        const response = await axios.post(`${thisUrl()}/admin/users`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

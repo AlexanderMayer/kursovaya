@@ -5,6 +5,7 @@ import {useRouter} from 'vue-router';
 import Vue3Select from 'vue3-select';
 import 'vue3-select/dist/vue3-select.css';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 let lots = ref([]);
@@ -22,14 +23,14 @@ const statuses = ref([
 
 const data = async () => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots/my');
+        const response = await axios.post(`${thisUrl()}/lots/my`);
         lots.value = response.data;
 
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
 
         const token = Cookies.get('token');
-        const responseUser = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const responseUser = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -84,11 +85,11 @@ function startTimer() {
 
 const showLots = async (category_id, currentStatus) => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots/my', {
+        const response = await axios.post(`${thisUrl()}/lots/my`, {
             category_id: category_id,
             status_id: currentStatus,
         });
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
@@ -100,8 +101,8 @@ const showLots = async (category_id, currentStatus) => {
 
 const showAllLots = async () => {
     try {
-        const response = await axios.post('http://localhost/kurs2.2/public/api/lots/my');
-        const responseCategories = await axios.get('http://localhost/kurs2.2/public/api/main');
+        const response = await axios.post(`${thisUrl()}/lots/my`);
+        const responseCategories = await axios.get(`${thisUrl()}/main`);
         categories.value = responseCategories.data.cats;
         lots.value = response.data;
         timers.value = lots.value.map(lot => ({id: lot.id, remainingTime: calculateRemainingTime(lot.created_at)}));
@@ -153,7 +154,7 @@ onMounted(() => {
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <div class="col" v-for="lot in lots" :key="lot.id">
                 <div class="card h-100 lot-card" @click.prevent="showLot(lot.id)">
-                    <img v-if="lot.images.length > 0" :src="`../storage/${lot.images[0].adress}`" class="card-img-top lot-image" alt="Фото лота"/>
+                    <img v-if="lot.images.length > 0" :src="`../../storage/${lot.images[0].adress}`" class="card-img-top lot-image" alt="Фото лота"/>
                     <div v-else class="card-img-top bg-light d-flex justify-content-center align-items-center lot-image">
                         Нет фотографий
                     </div>

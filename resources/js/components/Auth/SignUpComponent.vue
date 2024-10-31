@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 const name = ref('');
@@ -38,7 +39,7 @@ const validateForm = () => {
     if (!login.value) {
         loginError.value = 'Пожалуйста, введите логин.';
         isValid = false;
-    } else if (!/^[a-zA-Z0-9]+$/.test(login.value)) {
+    } else if (!/^[A-z0-9]+$/.test(login.value)) {
         loginError.value = 'Логин может содержать только латинские буквы и цифры без пробелов и специальных символов.';
         isValid = false;
     }
@@ -67,7 +68,7 @@ const signUp = async () => {
 
     try {
         const response = await axios.post(
-            'api/user/store', {
+            `${thisUrl()}/user/store`, {
                 name: name.value,
                 login: login.value,
                 email: email.value,
@@ -110,7 +111,7 @@ const signUp = async () => {
             <span v-if="formError" class="text-danger mt-3">{{ formError }}</span>
         </div>
 
-        <div v-if="showSuccessModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div v-if="showSuccessModal" class="modal fade show d-block" tabindex="-1">
             <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -129,5 +130,6 @@ const signUp = async () => {
 .modal.fade.show.d-block {
     opacity: 1;
     transition: opacity 1s ease-in-out;
+    background-color: rgba(0,0,0,0.5);
 }
 </style>

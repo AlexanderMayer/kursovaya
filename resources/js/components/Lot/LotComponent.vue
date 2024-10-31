@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
 import Cookies from "js-cookie";
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -13,6 +14,8 @@ let new_cost = ref(null);
 let timers = ref([]);
 let currentImageIndex = ref(0);
 let isModalOpen = ref(false);
+let isValidationModalOpen = ref(false);
+let validationMessage = ref("");
 let isLoading = ref(false);
 let isCostUpdating = ref(false);
 let user = ref([]);
@@ -23,7 +26,7 @@ const data = async () => {
     try {
         const lotId = route.params.id;
         const token = Cookies.get('token');
-        const response = await axios.get(`http://localhost/kurs2.2/public/api/lots/${lotId}`, {
+        const response = await axios.get(`${thisUrl()}/lots/${lotId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -35,12 +38,13 @@ const data = async () => {
             id: lot.value.id,
             remainingTime: calculateRemainingTime(lot.value.created_at, currentTime)
         }];
+        if(lot.value.seller){
+            name.value = lot.value.seller.name;
+            surname.value = lot.value.seller.surname;
+            sellerId.value = lot.value.seller.id;
+        }
 
-        name.value = lot.value.seller.name;
-        surname.value = lot.value.seller.surname;
-        sellerId.value = lot.value.seller.id;
-
-        const responseUser = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const responseUser = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -58,12 +62,19 @@ const data = async () => {
 
 async function betUp() {
     try {
+        const minBet = lot.value.bet_step;
+        if (new_cost.value < minBet) {
+            validationMessage.value = `Ставка должна быть не менее ${minBet}!`;
+            isValidationModalOpen.value = true;
+            return;
+        }
+
         isLoading.value = true;
         isCostUpdating.value = true;
         const lot_id = route.params.id;
         const token = Cookies.get('token');
 
-        await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
+        await axios.post(`${thisUrl()}/lots/${lot_id}/bet`, {
             new_cost: new_cost.value,
             bet_up: 0,
             headers: {
@@ -90,7 +101,7 @@ async function betStepUp(bet_up) {
         const lot_id = route.params.id;
         const token = Cookies.get('token');
 
-        await axios.post(`http://localhost/kurs2.2/public/api/lots/${lot_id}/bet`, {
+        await axios.post(`${thisUrl()}/lots/${lot_id}/bet`, {
             new_cost: 0,
             bet_up: bet_up,
             headers: {
@@ -107,6 +118,10 @@ async function betStepUp(bet_up) {
             isCostUpdating.value = false;
         }, 500);
     }
+}
+
+function closeValidationModal() {
+    isValidationModalOpen.value = false;
 }
 
 function calculateRemainingTime(createdAt) {
@@ -158,7 +173,7 @@ async function deleteLot() {
     try {
         const lot_id = route.params.id;
         const token = Cookies.get('token');
-        await axios.delete(`http://localhost/kurs2.2/public/api/lots/${lot_id}`, {
+        await axios.delete(`api/lots/${lot_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -189,16 +204,16 @@ onMounted(() => {
                                 <img class="d-block lot-image"
                                      :src="`../storage/${photo}`"
                                      alt="Фото лота"
-                                     style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                     style=" object-fit: fill;"
                                      @click="openModal(index)" />
                             </div>
                         </div>
                     </div>
-                    <button class="carousel-control-prev" type="button" @click="previousImage">
+                    <button class="carousel-control-prev custom-carousel-control" type="button" @click="previousImage">
                         <span class="carousel-control-prev-icon"></span>
                         <span class="visually-hidden">Предыдущий</span>
                     </button>
-                    <button class="carousel-control-next" type="button" @click="nextImage">
+                    <button class="carousel-control-next custom-carousel-control" type="button" @click="nextImage">
                         <span class="carousel-control-next-icon"></span>
                         <span class="visually-hidden">Следующий</span>
                     </button>
@@ -210,7 +225,7 @@ onMounted(() => {
                         <div>
                             <h2 class="card-title">{{ lot.title }}</h2>
                             <p class="card-text">{{ lot.description }}</p>
-                            <p class="text-muted">Продавец: {{ name }} {{ surname }}</p>
+                            <p v-if="(name !== null) && (surname !== null)" class="text-muted">Продавец: {{ name }} {{ surname }}</p>
                         </div>
                         <div v-if="lot.status === 'active'">
                             <p>{{ formatTime(timers.find(timer => timer.id === lot.id)?.remainingTime) }}</p>
@@ -232,6 +247,25 @@ onMounted(() => {
                 </div>
             </div>
         </div>
+
+
+        <div v-if="isValidationModalOpen" class="modal show d-block" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Ошибка ставки</h5>
+                        <button type="button" class="btn-close" @click="closeValidationModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ validationMessage }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="closeValidationModal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div v-if="isModalOpen" class="modal show d-block" tabindex="-1">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
@@ -251,10 +285,12 @@ onMounted(() => {
     </div>
 </template>
 
+
 <style scoped>
 .lot-image {
     cursor: zoom-in;
     transition: transform 0.3s ease;
+    width: 400px;
 }
 
 .lot-image:hover {
@@ -279,5 +315,19 @@ onMounted(() => {
 .modal-body img {
     max-height: 90vh;
     object-fit: contain;
+}
+
+.custom-carousel-control .carousel-control-prev-icon,
+.custom-carousel-control .carousel-control-next-icon {
+    background-color: black;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: 75%;
+    background-position: center;
+}
+
+.custom-carousel-control {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
 }
 </style>

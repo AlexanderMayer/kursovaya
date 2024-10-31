@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 const email = ref('');
@@ -39,7 +40,7 @@ const login = async () => {
     if (!validateForm()) return;
 
     try {
-        const response = await axios.post('api/auth/login', {
+        const response = await axios.post(`${thisUrl()}/auth/login`, {
             email: email.value,
             password: password.value,
         });

@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "vue-router";
+import {thisUrl} from "../api.js";
 
 const router = useRouter();
 const showModal = ref(false);
@@ -14,7 +15,7 @@ const data = async () => {
     try {
         const token = Cookies.get('token');
         if (!token) return;
-        const response = await axios.post('http://localhost/kurs2.2/public/api/user/edit', {
+        const response = await axios.post(`${thisUrl()}/user/edit`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -29,7 +30,7 @@ const data = async () => {
 async function logout() {
     Cookies.remove('token');
     try {
-        await axios.get('api/auth/logout').then(res => {
+        await axios.get(`${thisUrl()}/auth/logout`).then(res => {
             user.value = null;
             router.push({ name: 'start' });
         });

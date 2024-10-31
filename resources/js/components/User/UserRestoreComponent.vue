@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import {thisUrl} from "../../api.js";
 
 const router = useRouter();
 const email = ref('');
@@ -31,7 +32,7 @@ const data = async () => {
     if (!validateForm()) return;
 
     try {
-        await axios.post('http://localhost/kurs2.2/public/api/user/restore', {
+        await axios.post(`${thisUrl()}/user/restore`, {
             email: email.value
         });
         showSuccessModal.value = true;
