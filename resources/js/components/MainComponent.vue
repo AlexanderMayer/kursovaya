@@ -110,7 +110,7 @@ onBeforeUnmount(() => {
                             <router-link class="nav-link" :to="{ name: 'signUp' }">Регистрация</router-link>
                         </li>
                         <li v-show="!isLoggedIn" class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'login' }">Войти в IT</router-link>
+                            <router-link class="nav-link" :to="{ name: 'login' }">Войти в личный кабинет</router-link>
                         </li>
                         <li v-show="isLoggedIn" class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'user' }">Личный кабинет</router-link>

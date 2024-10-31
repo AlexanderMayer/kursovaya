@@ -1,12 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
-import {thisUrl} from "../../api.js";
+import { thisUrl } from "../../api.js";
 
 const router = useRouter();
-const route = useRoute();
 let user = ref([]);
 let avatar = ref(null);
 let name = ref('');
@@ -32,7 +31,6 @@ const validateForm = () => {
         nameError.value = 'Пожалуйста, введите имя.';
         isValid = false;
     }
-
 
     if (!surname.value) {
         surnameError.value = 'Пожалуйста, введите фамилию.';
@@ -67,7 +65,6 @@ const validateForm = () => {
     return isValid;
 };
 
-
 const data = async () => {
     try {
         const token = Cookies.get('token');
@@ -91,6 +88,13 @@ const data = async () => {
         throw error;
     }
 }
+
+const onFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        avatar.value = file;
+    }
+};
 
 const updateUser = async () => {
     formError.value = '';
@@ -147,7 +151,7 @@ onMounted(() => {
             <span v-if="passwordError" class="text-danger">{{ passwordError }}</span>
 
             <input type="password" v-model="password2" class="form-control my-3" placeholder="Повторите пароль">
-            <input type="file" @change="event => avatar.value = event.target.files[0]" class="form-control my-3" placeholder="Выберите аватарку">
+            <input type="file" @change="onFileChange" class="form-control my-3" placeholder="Выберите аватарку">
             <input type="submit" @click.prevent="updateUser" class="btn btn-success w-100" value="Изменить">
             <span v-if="formError" class="text-danger mt-3">{{ formError }}</span>
         </div>
