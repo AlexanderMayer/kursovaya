@@ -64,7 +64,7 @@ onMounted(() => {
     <div class="container mt-4">
         <div class="w-50 mx-auto">
             <h3>Подать жалобу на продавца</h3>
-            <textarea v-model="complaint" class="form-control my-3" placeholder="Введите текст жалобы или ссылку на лот продавыца" maxlength="500"></textarea>
+            <textarea v-model="complaint" class="form-control my-3" placeholder="Введите текст жалобы или ссылку на лот продавца" maxlength="500"></textarea>
             <button @click.prevent="submitComplaint" class="btn btn-danger w-100">Отправить жалобу</button>
         </div>
 

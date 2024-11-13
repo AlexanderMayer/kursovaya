@@ -8,7 +8,7 @@ import { thisUrl } from "../api.js";
 const router = useRouter();
 let showModal = ref(false);
 let intervalId = ref(null);
-let user = ref(null);
+let user = ref(JSON.parse(localStorage.getItem("user")) || null);
 let isNavbarOpen = ref(false);
 
 const data = async () => {
@@ -21,6 +21,7 @@ const data = async () => {
             }
         });
         user.value = response.data.data;
+        localStorage.setItem("user", JSON.stringify(user.value));
     } catch (error) {
         console.error('Ошибка вывода пользователя', error);
         throw error;
@@ -29,10 +30,12 @@ const data = async () => {
 
 const updateUser = (newUser) => {
     user.value = newUser;
+    localStorage.setItem("user", JSON.stringify(newUser));
 };
 
 async function logout() {
     Cookies.remove('token');
+    localStorage.removeItem("user");
     try {
         await axios.get(`${thisUrl()}/auth/logout`).then(res => {
             user.value = null;
@@ -49,6 +52,7 @@ const checkSession = async () => {
     if (!token) {
         if (user.value !== null) {
             user.value = null;
+            localStorage.removeItem("user");
             openSessionExpiredModal();
         }
         return;

@@ -72,8 +72,8 @@ const userUnban = async (userId) => {
 
 onMounted(() => {
     const token = Cookies.get('token');
-    if (user.value !== null) {
-        if (token && user.value.role === 2) {
+    if (userAdmin.value !== null) {
+        if (token && userAdmin.value.role === 2) {
             data();
         }
     }

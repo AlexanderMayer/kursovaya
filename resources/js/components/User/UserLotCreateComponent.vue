@@ -146,7 +146,7 @@ onMounted(() => {
             <input type="number" v-model="bet_step" class="form-control my-3" placeholder="Шаг ставки">
             <Vue3Select v-model="category_id" :options="filteredCategories" label="category_name" placeholder="Поиск и выбор категории" @search="val => searchQuery = val" :reduce="category => category.id" />
             <input type="file" @change="event => photos = Array.from(event.target.files)" multiple class="form-control my-3" placeholder="Фотографии">
-            <button @click.prevent="createLot" class="btn btn-success w-100">Выставить лот</button>
+            <button @click.prevent="createLot" class="btn btn-success w-100 mb-2">Выставить лот</button>
         </div>
 
         <div v-if="showErrorModal" class="alert alert-danger">
