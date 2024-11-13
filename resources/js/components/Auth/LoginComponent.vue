@@ -1,16 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
-import {thisUrl} from "../../api.js";
+import { thisUrl } from "../../api.js";
 
 const router = useRouter();
-const email = ref('');
-const password = ref('');
-const emailError = ref('');
-const passwordError = ref('');
-const loginError = ref('');
+let updateUser = inject('updateUser');
+let email = ref('');
+let password = ref('');
+let emailError = ref('');
+let passwordError = ref('');
+let loginError = ref('');
 
 const validateForm = () => {
     emailError.value = '';
@@ -34,7 +35,6 @@ const validateForm = () => {
 };
 
 const login = async () => {
-
     loginError.value = '';
 
     if (!validateForm()) return;
@@ -47,7 +47,16 @@ const login = async () => {
 
         const token = response.data.access_token;
         Cookies.set('token', token, {expires: 240 / 1440});
-        router.push({name: 'start'});
+
+        const responseUser = await axios.post(`${thisUrl()}/user/edit`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        updateUser(responseUser.data.data);
+
+        await router.push({name: 'start'});
     } catch (error) {
         console.error('Ошибка при входе', error);
         loginError.value = 'Неверный логин или пароль.';
@@ -62,7 +71,6 @@ function userRestore() {
         router.push({name: 'start'});
     }
 }
-
 </script>
 
 <template>

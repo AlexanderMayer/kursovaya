@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, onBeforeUnmount,computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount,computed, inject} from 'vue';
 import axios from 'axios';
 import {useRouter} from 'vue-router';
 import Vue3Select from 'vue3-select';
@@ -23,6 +23,7 @@ const statuses = ref([
 let currentPage = ref(1);
 const itemsPerPage = 9;
 let displayedLots = ref([]);
+let user = inject('user');
 
 const data = async () => {
     try {
@@ -151,8 +152,16 @@ function prevPage() {
 }
 
 onMounted(() => {
-    data();
-    startTimer();
+    const token = Cookies.get('token');
+    if (user.value !== null) {
+        if (token && user.value.role === 2) {
+            data();
+            startTimer();
+        }
+    }
+    else {
+        router.push({ name: 'start' });
+    }
 });
 </script>
 

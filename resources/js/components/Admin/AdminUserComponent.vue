@@ -1,14 +1,16 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, inject} from 'vue';
 import Cookies from "js-cookie";
 import axios from "axios";
-import {useRoute} from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import {thisUrl} from "../../api.js";
 
 const route = useRoute();
+const router = useRouter();
 let user = ref([]);
 let showBanConfirm = ref(false);
 let showBanSuccess = ref(false);
+let userAdmin = inject('user');
 
 const data = async () => {
     try {
@@ -69,7 +71,15 @@ const userUnban = async (userId) => {
 };
 
 onMounted(() => {
-    data();
+    const token = Cookies.get('token');
+    if (user.value !== null) {
+        if (token && user.value.role === 2) {
+            data();
+        }
+    }
+    else {
+        router.push({ name: 'start' });
+    }
 });
 </script>
 

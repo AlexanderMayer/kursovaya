@@ -1,15 +1,15 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, provide } from "vue";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "vue-router";
-import {thisUrl} from "../api.js";
+import { thisUrl } from "../api.js";
 
 const router = useRouter();
-const showModal = ref(false);
+let showModal = ref(false);
 let intervalId = ref(null);
 let user = ref(null);
-const isNavbarOpen = ref(false);
+let isNavbarOpen = ref(false);
 
 const data = async () => {
     try {
@@ -25,6 +25,10 @@ const data = async () => {
         console.error('Ошибка вывода пользователя', error);
         throw error;
     }
+};
+
+const updateUser = (newUser) => {
+    user.value = newUser;
 };
 
 async function logout() {
@@ -57,6 +61,9 @@ const checkSession = async () => {
 
 const isLoggedIn = computed(() => user.value !== null);
 
+provide('updateUser', updateUser);
+provide('user', user);
+
 function openSessionExpiredModal() {
     showModal.value = true;
 }
@@ -85,7 +92,7 @@ function closeNavbar() {
 
 onMounted(() => {
     checkSession();
-    intervalId.value = setInterval(checkSession, 14400000);
+    intervalId.value = setInterval(checkSession, 7200000);
 });
 
 onBeforeUnmount(() => {

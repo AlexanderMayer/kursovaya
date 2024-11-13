@@ -1,14 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import {ref, onMounted, inject} from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
 import {thisUrl} from "../../api.js";
 
 const router = useRouter();
-const route = useRoute();
 let role = ref('');
+let user = inject('user');
 
 const data = async () => {
     try {
@@ -34,9 +33,9 @@ async function allLots() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({ name: 'login' });
+            await router.push({ name: 'login' });
         } else {
-            router.push({ name: 'admin.lots' });
+            await router.push({ name: 'admin.lots' });
         }
     } catch (error) {
         console.error('Ошибка просмотра лотов', error);
@@ -54,9 +53,9 @@ async function allUsers() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({ name: 'start' });
+            await router.push({ name: 'start' });
         } else {
-            router.push({ name: 'admin.users' });
+            await router.push({ name: 'admin.users' });
         }
     } catch (error) {
         console.error('Ошибка просмотра пользователей', error);
@@ -74,9 +73,9 @@ async function complaintsShow() {
         });
         role.value = response.data.data.role;
         if (role.value === '1') {
-            router.push({ name: 'login' });
+            await router.push({ name: 'login' });
         } else {
-            router.push({ name: 'admin.complaints' });
+            await router.push({ name: 'admin.complaints' });
         }
     } catch (error) {
         console.error('Ошибка просмотра жалоб', error);
@@ -85,7 +84,15 @@ async function complaintsShow() {
 }
 
 onMounted(() => {
-    data();
+    const token = Cookies.get('token');
+    if (user.value !== null) {
+        if (token && user.value.role === 2) {
+            data();
+        }
+    }
+    else {
+        router.push({ name: 'start' });
+    }
 });
 </script>
 

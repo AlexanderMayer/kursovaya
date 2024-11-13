@@ -1,12 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Cookies from "js-cookie";
 import { thisUrl } from "../../api.js";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 
 let complaint = ref('');
 const route = useRoute();
+const router = useRouter();
 let showSuccessModal = ref(false);
 let showErrorModal = ref(false);
 let errorMessages = ref([]);
@@ -50,6 +51,13 @@ const submitComplaint = async () => {
         showErrorModal.value = true;
     }
 };
+
+onMounted(() => {
+    const token = Cookies.get('token');
+    if (!token) {
+        router.push({ name: 'login' });
+    }
+});
 </script>
 
 <template>

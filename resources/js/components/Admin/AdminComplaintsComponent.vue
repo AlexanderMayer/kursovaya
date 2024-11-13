@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import {ref, onMounted, computed, inject} from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
@@ -9,6 +9,7 @@ const router = useRouter();
 let complaints = ref([]);
 const searchQuery = ref('');
 const showSuccessModal = ref(false);
+let user = inject('user');
 
 const data = async () => {
     try {
@@ -71,7 +72,15 @@ const submitDecision = async (complaint) => {
 };
 
 onMounted(() => {
-    data();
+    const token = Cookies.get('token');
+    if (user.value !== null) {
+        if (token && user.value.role === 2) {
+            data();
+        }
+    }
+    else {
+        router.push({ name: 'start' });
+    }
 });
 </script>
 

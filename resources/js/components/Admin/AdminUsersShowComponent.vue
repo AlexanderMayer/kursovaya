@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed,inject } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import Cookies from "js-cookie";
@@ -8,6 +8,7 @@ import {thisUrl} from "../../api.js";
 const router = useRouter();
 let users = ref([]);
 const searchQuery = ref('');
+let user = inject('user');
 
 const data = async () => {
     try {
@@ -47,7 +48,15 @@ function showUser(id) {
 }
 
 onMounted(() => {
-    data();
+    const token = Cookies.get('token');
+    if (user.value !== null) {
+        if (token && user.value.role === 2) {
+            data();
+        }
+    }
+    else {
+        router.push({ name: 'start' });
+    }
 });
 </script>
 

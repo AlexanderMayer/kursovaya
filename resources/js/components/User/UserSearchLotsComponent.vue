@@ -136,6 +136,10 @@ const showLots = async (category_id) => {
 onMounted(() => {
     Data();
     startTimer();
+    const token = Cookies.get('token');
+    if (!token) {
+        router.push({ name: 'login' });
+    }
 });
 </script>
 

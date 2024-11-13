@@ -87,6 +87,10 @@ const userDelete = async () => {
 
 onMounted(() => {
     data();
+    const token = Cookies.get('token');
+    if (!token) {
+        router.push({ name: 'login' });
+    }
 });
 </script>
 
